@@ -163,7 +163,16 @@ end
 -------------------------------------------------------------------------------
 
 local function percentToBri( p )  return clamp( round( (p or 0) / 100 * 254 ), 1, 254 ) end
-local function briToPercent( b )  return clamp( round( (b or 0) / 254 * 100 ), 0, 100 ) end
+-- Hue's "bri" laeuft von 1 (Minimum, Lampe ist an) bis 254 - 0 bedeutet in der
+-- API "aus" und kommt bei einer erreichbaren/eingeschalteten Lampe nicht vor.
+-- Reines lineares Runden (1/254*100 = 0.39%) wuerde bei bri=1 auf 0% runden -
+-- die Hue-App zeigt in diesem Fall jedoch "1%" an, nie "0%", solange die Lampe
+-- an ist. Daher: jeder bri-Wert > 0 wird auf mindestens 1% angehoben, damit die
+-- JVP-Anzeige mit der Hue-App uebereinstimmt.
+local function briToPercent( b )
+	if ((b == nil) or (b <= 0)) then return 0 end
+	return clamp( round( b / 254 * 100 ), 1, 100 )
+end
 local function kelvinToMired( k ) return clamp( round( 1000000 / math.max( k or 2700, 1 ) ), 153, 500 ) end
 local function miredToKelvin( m ) return round( 1000000 / math.max( m or 300, 1 ) ) end
 local function degToHueVal( d )   return clamp( round( (d or 0) / 360 * 65535 ), 0, 65535 ) end
@@ -1051,11 +1060,49 @@ function Poll()
 	pollLightsIfDue()
 end
 
+--- Bei nReason == constWriteReadCmd (explizites "Lesen" im JVP-Editor, im
+-- Unterschied zu constValueRead/constGetUpdate) zuerst die betroffene Instanz
+-- live von der Bridge nachladen, statt nur den moeglicherweise veralteten
+-- Cache-Wert zurueckzugeben - sonst bleibt ein manuelles "Lesen" wirkungslos,
+-- wenn sich der Bridge-Zustand seit dem letzten Refresh geaendert hat.
+local function refreshInstanceForRead( oVarPath )
+	local oLight = oVarPath:_findParentFromUserType( "light_t" )
+	if (oLight ~= nil) then
+		refreshSingleLight( oLight, getStr( oLight, "LIGHT_HUE_ID" ) )
+		return
+	end
+	local oGroup = oVarPath:_findParentFromUserType( "group_t" )
+	if (oGroup ~= nil) then
+		refreshSingleGroup( oGroup, getStr( oGroup, "GROUP_HUE_ID" ) )
+		return
+	end
+	local oScene = oVarPath:_findParentFromUserType( "scene_t" )
+	if (oScene ~= nil) then
+		refreshSingleScene( oScene, getStr( oScene, "SCENE_HUE_ID" ) )
+		return
+	end
+	local oSensor = oVarPath:_findParentFromUserType( "sensor_t" )
+	if (oSensor ~= nil) then
+		refreshSingleSensor( oSensor, getStr( oSensor, "SENSOR_HUE_ID" ) )
+		return
+	end
+	local oAuto = oVarPath:_findParentFromUserType( "automation_t" )
+	if (oAuto ~= nil) then
+		refreshSingleAutomation( oAuto, getStr( oAuto, "AUTOMATION_HUE_ID" ) )
+	end
+end
+
 function OnValueRead( oVarPath, nReason )
 	local v = oVarPath:_getLeaf()
 	if (nil == v) then return end
 	local a = v:GetAccessRights()
 	if ((a ~= constAccessRead) and (a ~= constAccessReadWrite)) then return end
+	if (nReason == constWriteReadCmd) then
+		local pOk, pErr = pcall( refreshInstanceForRead, oVarPath )
+		if (not pOk) then
+			traceMsg( "FEHLER bei explizitem Lesen (" .. tostring(v:GetScriptName()) .. "): " .. tostring(pErr) )
+		end
+	end
 	local val = v:GetValue()
 	if (nil ~= val) then v:SetValue( val, constResponseFromCache ) end
 end
