@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SDVINTERFACE VERSION="1">
-	<INFO NAME="PhilipsHue" AUTHOR="Albrecht" DESCRIPTION="Philips Hue Bridge Anschluss: Lampen, Gruppen, Szenen, Sensoren, Automationen und Anwesenheit (Geofencing)" VERSION="1" APIVERSION="5" POLLTIME="5000"/>
+	<INFO NAME="PhilipsHue" AUTHOR="Albrecht" DESCRIPTION="Philips Hue Bridge Anschluss: Lampen, Gruppen, Szenen, Sensoren, Automationen und Anwesenheit (Geofencing)" VERSION="1" APIVERSION="5" POLLTIME="1000"/>
 	<PVITEMS>
 		<PVFOLDER SCRIPTNAME="CONFIGURATION" CREATIONTYPE="Unique" USERTYPE="configuration_t" DEFAULTNAME="Konfiguration">
 			<PVSTRING  SCRIPTNAME="BRIDGE_IP"        DEFAULTNAME="Bridge IP-Adresse"      ACCESS="Read/Write" SAVE="1" EXPORT="1" DESCRIPTION="IP-Adresse der Hue Bridge im lokalen Netzwerk, z.B. 192.168.1.20"/>

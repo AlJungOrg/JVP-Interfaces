@@ -29,6 +29,13 @@
 -- every light has its own LIGHT_POLL_INTERVAL (seconds, 0=off); if set, that
 -- light is queried automatically on the configured cadence (see
 -- pollLightsIfDue(), called from Poll() every mg_nPollSeconds).
+-- Additionally: when a light is switched via a *_CMD datapoint (on/off,
+-- brightness, hue, saturation, color temperature), triggerLightPollBoost()
+-- starts a boost window of LIGHT_POLL_BOOST_DURATION_SECONDS seconds during
+-- which that light is queried at the LIGHT_POLL_BOOST_INTERVAL_SECONDS
+-- cadence - regardless of the configured LIGHT_POLL_INTERVAL (even at 0=off).
+-- Once the boost window ends, only the configured LIGHT_POLL_INTERVAL applies
+-- again.
 --
 -- LOGGING (commercial deployment): traceMsg() replaces E:trace() and also
 -- writes every message (timestamped) into the rolling STATUS.DEBUG_LOG
@@ -46,8 +53,15 @@
 require "InterfaceScriptCommonLibrary"
 json = require "json"
 
-mg_nPollSeconds = 5                -- keep in sync with INFO POLLTIME (5000 ms)
+mg_nPollSeconds = 1                -- keep in sync with INFO POLLTIME (1000 ms)
 local MAX_DEBUG_LOG_LEN = 4000     -- character budget for STATUS.DEBUG_LOG
+
+-- Boost polling: while a light's boost is active (see
+-- triggerLightPollBoost()), that light is queried once per second instead of
+-- at the configured LIGHT_POLL_INTERVAL. Requires INFO POLLTIME <= 1000 ms so
+-- Poll() is actually invoked often enough.
+local LIGHT_POLL_BOOST_INTERVAL_SECONDS = 1
+local LIGHT_POLL_BOOST_DURATION_SECONDS = 30
 
 CFG    = nil                       -- CONFIGURATION folder (set in Init)
 STATUS = nil                       -- STATUS folder (set in Init)
@@ -66,6 +80,7 @@ g_prevTriggerCount = {}            -- rule id -> last seen "timestriggered" valu
 g_lastConnected   = nil            -- previous CONNECTED state, for change-only tracing
 g_lastPresent     = nil            -- previous ANY_PRESENT state, for change-only tracing
 g_lastLightPoll   = {}             -- Hue light id -> os.time() of last automatic refresh
+g_lightBoostUntil = {}             -- Hue light id -> os.time() until which the poll boost is active
 
 -------------------------------------------------------------------------------
 -- Generic helpers
@@ -1000,6 +1015,7 @@ function Init()
 	g_lastConnected = nil
 	g_lastPresent = nil
 	g_lastLightPoll = {}
+	g_lightBoostUntil = {}
 	traceMsg( "Instances loaded - Lights=" .. tblCount(LIGHTTABLE) ..
 		" Groups=" .. tblCount(GROUPTABLE) .. " Scenes=" .. tblCount(SCENETABLE) ..
 		" Sensors=" .. tblCount(SENSORTABLE) .. " Automations=" .. tblCount(AUTOMATIONTABLE) )
@@ -1012,16 +1028,43 @@ function Exit()
 	if (HTTP_RQ ~= nil) then pcall( function() HTTP_RQ:Close() end ) end
 end
 
+--- Starts a boost polling window for a light: for
+-- LIGHT_POLL_BOOST_DURATION_SECONDS seconds it is queried at the
+-- LIGHT_POLL_BOOST_INTERVAL_SECONDS cadence instead of the configured
+-- LIGHT_POLL_INTERVAL. Called from OnValueChange() as soon as a light's
+-- *_CMD datapoint has been written (i.e. the light was switched via JVP) -
+-- this closely tracks any transition/aftereffect of the switching command
+-- for a short while. Once the window ends, only the configured
+-- LIGHT_POLL_INTERVAL applies again (see pollLightsIfDue()).
+-- @param id string  Hue light id
+local function triggerLightPollBoost( id )
+	if ((id == nil) or (id == "")) then return end
+	g_lightBoostUntil[id] = os.time() + LIGHT_POLL_BOOST_DURATION_SECONDS
+end
+
 --- Optional automatic polling per light: LIGHT_POLL_INTERVAL (seconds, 0=off)
 -- determines how often exactly that light is queried automatically. Called
 -- from Poll() (every mg_nPollSeconds); checks per light whether enough time
 -- has passed since the last automatic query. Without a set interval, behavior
 -- is unchanged (only once at Init() or manually via CONFIGURATION.REFRESH_STATES).
+-- If a boost window is currently active for a light (see
+-- triggerLightPollBoost()), it is queried at the
+-- LIGHT_POLL_BOOST_INTERVAL_SECONDS cadence instead - even if
+-- LIGHT_POLL_INTERVAL is 0 (off). Once the window ends, only the configured
+-- LIGHT_POLL_INTERVAL applies again.
 local function pollLightsIfDue()
 	local now = os.time()
 	local anyFailed = false
 	for id, oInst in pairs( LIGHTTABLE ) do
 		local interval = getNum( oInst, "LIGHT_POLL_INTERVAL" )
+		local boostUntil = g_lightBoostUntil[id]
+		if (boostUntil ~= nil) then
+			if (now < boostUntil) then
+				interval = LIGHT_POLL_BOOST_INTERVAL_SECONDS
+			else
+				g_lightBoostUntil[id] = nil  -- boost window expired, back to LIGHT_POLL_INTERVAL
+			end
+		end
 		if (interval > 0) then
 			local last = g_lastLightPoll[id] or 0
 			if ((now - last) >= interval) then
@@ -1168,7 +1211,14 @@ function OnValueChange( oVarPath, strValue )
 			httpRequest( 2, base, { on = true, hue = degToHueVal(parseNum(strValue) or 0) }, false, false )
 		elseif (name == "LIGHT_SATURATION_CMD") then
 			httpRequest( 2, base, { on = true, sat = percentToSat(parseNum(strValue) or 0) }, false, false )
+		else
+			return
 		end
+		-- Switched via JVP (one of the *_CMD datapoints above) -> poll this
+		-- light more closely for a while (see triggerLightPollBoost()). Editing
+		-- only LIGHT_POLL_INTERVAL, for example, hits the "else" above and
+		-- never reaches this point.
+		triggerLightPollBoost( id )
 		return
 	end
 
