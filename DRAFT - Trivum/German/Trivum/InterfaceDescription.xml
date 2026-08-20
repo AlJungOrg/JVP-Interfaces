@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SDVINTERFACE VERSION="1">
+	<INFO NAME="Trivum" AUTHOR="Albrecht"
+		DESCRIPTION="trivum multiroom audio (mcenter HTTP/XML API)"
+		DESCRIPTION_DE="trivum Multiroom-Audio (mcenter HTTP/XML API)"
+		DESCRIPTION_EN="trivum multiroom audio (mcenter HTTP/XML API)"
+		HELPFILE_DE="InterfaceHelp_DE.pdf" HELPFILE_EN="InterfaceHelp_EN.pdf"
+		VERSION="2" APIVERSION="5" POLLTIME="2000"/>
+	<PVITEMS>
+		<PVFOLDER SCRIPTNAME="CONFIGURATION" CREATIONTYPE="Unique" USERTYPE="configuration_t"
+			DEFAULTNAME="Configuration" DEFAULTNAME_DE="Konfiguration" DEFAULTNAME_EN="Configuration">
+			<PVSTRING SCRIPTNAME="HOST" ACCESS="None" SAVE="1" EXPORT="0"
+				DEFAULTNAME="trivum IP address / hostname" DEFAULTNAME_DE="trivum IP-Adresse / Hostname" DEFAULTNAME_EN="trivum IP address / hostname"
+				DESCRIPTION="IP address or hostname of the trivum system (e.g. MusicCenter)"
+				DESCRIPTION_DE="IP-Adresse oder Hostname des trivum Systems (z.B. MusicCenter)"
+				DESCRIPTION_EN="IP address or hostname of the trivum system (e.g. MusicCenter)"/>
+			<PVANALOG SCRIPTNAME="PORT" UNIT="[1..65535]" ACCESS="None" SAVE="1" EXPORT="0"
+				DEFAULTNAME="HTTP port" DEFAULTNAME_DE="HTTP Port" DEFAULTNAME_EN="HTTP port"
+				DESCRIPTION="HTTP port of the trivum web interface (default 80)"
+				DESCRIPTION_DE="HTTP Port des trivum Webinterface (Standard 80)"
+				DESCRIPTION_EN="HTTP port of the trivum web interface (default 80)"/>
+			<PVANALOG SCRIPTNAME="ZONE_COUNT" UNIT="[1..64]" ACCESS="None" SAVE="1" EXPORT="0"
+				DEFAULTNAME="Number of trivum zones (total)" DEFAULTNAME_DE="Anzahl trivum Zonen (gesamt)" DEFAULTNAME_EN="Number of trivum zones (total)"
+				DESCRIPTION="Total number of physical trivum zones in the system, regardless of how many zone instances are configured here (used for multiroom grouping, e.g. 4)"
+				DESCRIPTION_DE="Gesamtzahl der physischen trivum Zonen im System, unabhaengig davon wie viele Zone-Instanzen hier angelegt sind (fuer Multiroom-Gruppierung, z.B. 4)"
+				DESCRIPTION_EN="Total number of physical trivum zones in the system, regardless of how many zone instances are configured here (used for multiroom grouping, e.g. 4)"/>
+			<PVBINARY SCRIPTNAME="LIST_ZONES" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="List" UNIT0_DE="" UNIT1_DE="Auflisten" UNIT0_EN="" UNIT1_EN="List"
+				DefaultName="List zones" DefaultName_DE="Zonen auflisten" DefaultName_EN="List zones"
+				DESCRIPTION="Fetches all trivum zones (ID + name) via getAll.xml and writes them to Status/Zone list - to find the ZONE_ID without the trivum web interface"
+				DESCRIPTION_DE="Fragt alle trivum Zonen (ID + Name) per getAll.xml ab und schreibt sie nach Status/Zonenliste - zum Auffinden der ZONE_ID ohne trivum Webinterface"
+				DESCRIPTION_EN="Fetches all trivum zones (ID + name) via getAll.xml and writes them to Status/Zone list - to find the ZONE_ID without the trivum web interface"/>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="STATUS" CREATIONTYPE="Unique" USERTYPE="status_t"
+			DEFAULTNAME="Status" DEFAULTNAME_DE="Status" DEFAULTNAME_EN="Status">
+			<PVBINARY SCRIPTNAME="CONNECTED" ACCESS="Read" SAVE="0" EXPORT="1"
+				UNIT0="disconnected" UNIT1="connected" UNIT0_DE="getrennt" UNIT1_DE="verbunden" UNIT0_EN="disconnected" UNIT1_EN="connected"
+				DefaultName="Connection" DefaultName_DE="Verbindung" DefaultName_EN="Connection"
+				DESCRIPTION="Last trivum HTTP call was successful"
+				DESCRIPTION_DE="Letzter trivum HTTP Aufruf war erfolgreich"
+				DESCRIPTION_EN="Last trivum HTTP call was successful"/>
+			<PVSTRING SCRIPTNAME="LASTERROR" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Last error" DefaultName_DE="Letzter Fehler" DefaultName_EN="Last error"
+				DESCRIPTION="Error text of the last failed trivum call"
+				DESCRIPTION_DE="Fehlertext des letzten fehlgeschlagenen trivum Aufrufs"
+				DESCRIPTION_EN="Error text of the last failed trivum call"/>
+			<PVTIME   SCRIPTNAME="LASTPOLL" UNIT0="" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Last update" DefaultName_DE="Letzte Aktualisierung" DefaultName_EN="Last update"
+				DESCRIPTION="Time of the last successful status query"
+				DESCRIPTION_DE="Zeitpunkt der letzten erfolgreichen Statusabfrage"
+				DESCRIPTION_EN="Time of the last successful status query"/>
+			<PVBINARY SCRIPTNAME="ALL_OFF" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="All zones off" UNIT0_DE="" UNIT1_DE="Alle Zonen aus" UNIT0_EN="" UNIT1_EN="All zones off"
+				DefaultName="All zones off" DefaultName_DE="Alle Zonen aus" DefaultName_EN="All zones off"
+				DESCRIPTION="Switches off all trivum zones (ZONECMD_ALLOFF)"
+				DESCRIPTION_DE="Schaltet alle trivum Zonen aus (ZONECMD_ALLOFF)"
+				DESCRIPTION_EN="Switches off all trivum zones (ZONECMD_ALLOFF)"/>
+			<PVTIME   SCRIPTNAME="LAST_ALLOFF_TIME" UNIT0="" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Feedback: All zones off sent" DefaultName_DE="Rueckmeldung: Alle Zonen aus gesendet" DefaultName_EN="Feedback: All zones off sent"
+				DESCRIPTION="Feedback: time of the last sent 'All zones off' telegram"
+				DESCRIPTION_DE="Rueckmeldung: Zeitpunkt des letzten gesendeten 'Alle Zonen aus' Telegramms"
+				DESCRIPTION_EN="Feedback: time of the last sent 'All zones off' telegram"/>
+			<PVSTRING SCRIPTNAME="ZONES_LIST" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Zone list (ID + name)" DefaultName_DE="Zonenliste (ID + Name)" DefaultName_EN="Zone list (ID + name)"
+				DESCRIPTION="Tab-separated list 'ID[TAB]Name' of all trivum zones per getAll.xml, triggered via Configuration/List zones"
+				DESCRIPTION_DE="Tab-getrennte Liste 'ID[TAB]Name' aller trivum Zonen laut getAll.xml, ausgeloest ueber Konfiguration/Zonen auflisten"
+				DESCRIPTION_EN="Tab-separated list 'ID[TAB]Name' of all trivum zones per getAll.xml, triggered via Configuration/List zones"/>
+			<PVTIME   SCRIPTNAME="ZONES_LASTUPDATE" UNIT0="" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Zone list last updated" DefaultName_DE="Zonenliste zuletzt aktualisiert" DefaultName_EN="Zone list last updated"
+				DESCRIPTION="Time of the last successful zone list query"
+				DESCRIPTION_DE="Zeitpunkt der letzten erfolgreichen Zonenlisten-Abfrage"
+				DESCRIPTION_EN="Time of the last successful zone list query"/>
+		</PVFOLDER>
+
+		<!-- trivum Favoriten (/api/v1/trivum/favorite.xml). Antwortformat am
+		     2026-07-09 gegen trivum V10.16 bestaetigt: <rows><head>...
+		     <totalRecords>N</totalRecords></head><row><number>i</number>
+		     <info1>Name (percent-encoded)</info1><source>Dienst</source>
+		     <action>/xml/zone/set.xml?source=@fN</action></row>...</rows>.
+		     info1/info2/coverart sind percent-encodiert (%20=Leerzeichen usw.),
+		     NICHT das "_XX" Schema der Zonen-Texte - dafuer gibt es urlDecode(). -->
+		<PVFOLDER SCRIPTNAME="FAVORITES" CREATIONTYPE="Unique" USERTYPE="favorites_t"
+			DEFAULTNAME="trivum favorites" DEFAULTNAME_DE="trivum Favoriten" DEFAULTNAME_EN="trivum favorites">
+			<PVBINARY SCRIPTNAME="FAVORITES_REFRESH" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Refresh" UNIT0_DE="" UNIT1_DE="Aktualisieren" UNIT0_EN="" UNIT1_EN="Refresh"
+				DefaultName="Refresh favorites list" DefaultName_DE="Favoritenliste aktualisieren" DefaultName_EN="Refresh favorites list"
+				DESCRIPTION="Fetches the favorites list from trivum again"
+				DESCRIPTION_DE="Fragt die Favoritenliste erneut von trivum ab"
+				DESCRIPTION_EN="Fetches the favorites list from trivum again"/>
+			<PVSTRING SCRIPTNAME="FAVORITES_LIST" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorites list" DefaultName_DE="Favoritenliste" DefaultName_EN="Favorites list"
+				DESCRIPTION="Prepared list: '@fN: Name [Service]' per line, can be entered directly into SOURCE"
+				DESCRIPTION_DE="Aufbereitete Liste: '@fN: Name [Dienst]' pro Zeile, direkt in SOURCE eintragbar"
+				DESCRIPTION_EN="Prepared list: '@fN: Name [Service]' per line, can be entered directly into SOURCE"/>
+			<PVANALOG SCRIPTNAME="FAVORITES_COUNT" UNIT="[0..999]" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Number of favorites" DefaultName_DE="Anzahl Favoriten" DefaultName_EN="Number of favorites"
+				DESCRIPTION="Number of favorites detected in FAVORITES_LIST"
+				DESCRIPTION_DE="Anzahl der erkannten Favoriten in FAVORITES_LIST"
+				DESCRIPTION_EN="Number of favorites detected in FAVORITES_LIST"/>
+
+			<!-- Favoriten einzeln nach @f-Index getrennt (Slots 1-20), damit jeder
+			     Favorit direkt an ein eigenes Bedienelement in der Visu gebunden
+			     werden kann, statt nur als ein zusammenhaengender Listentext. -->
+			<PVSTRING SCRIPTNAME="FAVORITE_1" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f1" DefaultName_DE="Favorit @f1" DefaultName_EN="Favorite @f1"
+				DESCRIPTION="Name of trivum favorite @f1 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f1 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f1 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_2" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f2" DefaultName_DE="Favorit @f2" DefaultName_EN="Favorite @f2"
+				DESCRIPTION="Name of trivum favorite @f2 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f2 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f2 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_3" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f3" DefaultName_DE="Favorit @f3" DefaultName_EN="Favorite @f3"
+				DESCRIPTION="Name of trivum favorite @f3 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f3 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f3 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_4" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f4" DefaultName_DE="Favorit @f4" DefaultName_EN="Favorite @f4"
+				DESCRIPTION="Name of trivum favorite @f4 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f4 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f4 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_5" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f5" DefaultName_DE="Favorit @f5" DefaultName_EN="Favorite @f5"
+				DESCRIPTION="Name of trivum favorite @f5 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f5 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f5 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_6" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f6" DefaultName_DE="Favorit @f6" DefaultName_EN="Favorite @f6"
+				DESCRIPTION="Name of trivum favorite @f6 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f6 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f6 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_7" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f7" DefaultName_DE="Favorit @f7" DefaultName_EN="Favorite @f7"
+				DESCRIPTION="Name of trivum favorite @f7 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f7 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f7 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_8" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f8" DefaultName_DE="Favorit @f8" DefaultName_EN="Favorite @f8"
+				DESCRIPTION="Name of trivum favorite @f8 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f8 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f8 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_9" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f9" DefaultName_DE="Favorit @f9" DefaultName_EN="Favorite @f9"
+				DESCRIPTION="Name of trivum favorite @f9 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f9 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f9 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_10" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f10" DefaultName_DE="Favorit @f10" DefaultName_EN="Favorite @f10"
+				DESCRIPTION="Name of trivum favorite @f10 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f10 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f10 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_11" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f11" DefaultName_DE="Favorit @f11" DefaultName_EN="Favorite @f11"
+				DESCRIPTION="Name of trivum favorite @f11 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f11 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f11 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_12" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f12" DefaultName_DE="Favorit @f12" DefaultName_EN="Favorite @f12"
+				DESCRIPTION="Name of trivum favorite @f12 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f12 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f12 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_13" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f13" DefaultName_DE="Favorit @f13" DefaultName_EN="Favorite @f13"
+				DESCRIPTION="Name of trivum favorite @f13 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f13 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f13 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_14" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f14" DefaultName_DE="Favorit @f14" DefaultName_EN="Favorite @f14"
+				DESCRIPTION="Name of trivum favorite @f14 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f14 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f14 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_15" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f15" DefaultName_DE="Favorit @f15" DefaultName_EN="Favorite @f15"
+				DESCRIPTION="Name of trivum favorite @f15 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f15 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f15 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_16" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f16" DefaultName_DE="Favorit @f16" DefaultName_EN="Favorite @f16"
+				DESCRIPTION="Name of trivum favorite @f16 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f16 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f16 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_17" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f17" DefaultName_DE="Favorit @f17" DefaultName_EN="Favorite @f17"
+				DESCRIPTION="Name of trivum favorite @f17 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f17 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f17 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_18" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f18" DefaultName_DE="Favorit @f18" DefaultName_EN="Favorite @f18"
+				DESCRIPTION="Name of trivum favorite @f18 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f18 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f18 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_19" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f19" DefaultName_DE="Favorit @f19" DefaultName_EN="Favorite @f19"
+				DESCRIPTION="Name of trivum favorite @f19 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f19 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f19 (empty if not present)"/>
+			<PVSTRING SCRIPTNAME="FAVORITE_20" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorite @f20" DefaultName_DE="Favorit @f20" DefaultName_EN="Favorite @f20"
+				DESCRIPTION="Name of trivum favorite @f20 (empty if not present)"
+				DESCRIPTION_DE="Name des trivum Favoriten @f20 (leer, falls nicht vorhanden)"
+				DESCRIPTION_EN="Name of trivum favorite @f20 (empty if not present)"/>
+
+			<PVSTRING SCRIPTNAME="FAVORITES_RAW" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorites (raw data)" DefaultName_DE="Favoriten (Rohdaten)" DefaultName_EN="Favorites (raw data)"
+				DESCRIPTION="Raw XML response from /api/v1/trivum/favorite.xml (debug/fallback)"
+				DESCRIPTION_DE="Rohe XML-Antwort von /api/v1/trivum/favorite.xml (Debug/Fallback)"
+				DESCRIPTION_EN="Raw XML response from /api/v1/trivum/favorite.xml (debug/fallback)"/>
+			<PVTIME   SCRIPTNAME="FAVORITES_LASTUPDATE" UNIT0="" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Favorites last updated" DefaultName_DE="Favoriten zuletzt aktualisiert" DefaultName_EN="Favorites last updated"
+				DESCRIPTION="Time of the last successful favorites query"
+				DESCRIPTION_DE="Zeitpunkt der letzten erfolgreichen Favoriten-Abfrage"
+				DESCRIPTION_EN="Time of the last successful favorites query"/>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="Zone" CREATIONTYPE="Multiple" USERTYPE="zone_t"
+			DEFAULTNAME="Zone" DEFAULTNAME_DE="Zone" DEFAULTNAME_EN="Zone">
+			<PVSTRING SCRIPTNAME="INSTANCE_NAME" ACCESS="None" SAVE="1" EXPORT="0"
+				DEFAULTNAME="Zone name" DEFAULTNAME_DE="Zonenname" DEFAULTNAME_EN="Zone name"
+				DESCRIPTION="Internal display name of the zone"
+				DESCRIPTION_DE="Interner Anzeigename der Zone"
+				DESCRIPTION_EN="Internal display name of the zone"/>
+			<PVANALOG SCRIPTNAME="ZONE_ID" UNIT="[0..63]" ACCESS="None" SAVE="1" EXPORT="0"
+				DEFAULTNAME="trivum zone ID" DEFAULTNAME_DE="trivum Zonen-ID" DEFAULTNAME_EN="trivum zone ID"
+				DESCRIPTION="Zone ID per the trivum web configuration (Automation / trivum API)"
+				DESCRIPTION_DE="Zonen-ID laut trivum Web-Konfiguration (Automation / trivum API)"
+				DESCRIPTION_EN="Zone ID per the trivum web configuration (Automation / trivum API)"/>
+
+			<PVBINARY SCRIPTNAME="POWER" ACCESS="Read/Write" SAVE="0" EXPORT="1"
+				UNIT0="off" UNIT1="on" UNIT0_DE="aus" UNIT1_DE="ein" UNIT0_EN="off" UNIT1_EN="on"
+				DefaultName="On/Off" DefaultName_DE="Ein/Aus" DefaultName_EN="On/Off"
+				DESCRIPTION="Switch the zone on/off"
+				DESCRIPTION_DE="Zone ein-/ausschalten"
+				DESCRIPTION_EN="Switch the zone on/off"/>
+			<PVBINARY SCRIPTNAME="MUTE" ACCESS="Read/Write" SAVE="0" EXPORT="1"
+				UNIT0="off" UNIT1="muted" UNIT0_DE="aus" UNIT1_DE="stumm" UNIT0_EN="off" UNIT1_EN="muted"
+				DefaultName="Mute" DefaultName_DE="Stummschaltung" DefaultName_EN="Mute"
+				DESCRIPTION="Mute the zone"
+				DESCRIPTION_DE="Zone stummschalten"
+				DESCRIPTION_EN="Mute the zone"/>
+			<PVANALOG SCRIPTNAME="VOLUME" UNIT="[0..100]" ACCESS="Read/Write" SAVE="0" EXPORT="1"
+				DefaultName="Volume" DefaultName_DE="Lautstaerke" DefaultName_EN="Volume"
+				DESCRIPTION="Volume of the zone (0-100)"
+				DESCRIPTION_DE="Lautstaerke der Zone (0-100)"
+				DESCRIPTION_EN="Volume of the zone (0-100)"/>
+
+			<!-- Rueckmeldungen: separate Read-only Datenpunkte, ausschliesslich aus dem Poll
+			     (/xml/zone/get.xml) befuellt - unabhaengig vom Sende-Telegramm/Sollwert oben.
+			     MUTE_RM bleibt leer, falls trivum diesen Wert
+			     nicht im Status zurueckliefert (in der API Doku nicht zugesichert). -->
+			<PVBINARY SCRIPTNAME="POWER_RM" ACCESS="Read" SAVE="0" EXPORT="1"
+				UNIT0="off" UNIT1="on" UNIT0_DE="aus" UNIT1_DE="ein" UNIT0_EN="off" UNIT1_EN="on"
+				DefaultName="Feedback On/Off" DefaultName_DE="Rueckmeldung Ein/Aus" DefaultName_EN="Feedback On/Off"
+				DESCRIPTION="Feedback: actual on/off state per trivum poll"
+				DESCRIPTION_DE="Rueckmeldung: tatsaechlicher Ein/Aus-Status laut trivum Poll"
+				DESCRIPTION_EN="Feedback: actual on/off state per trivum poll"/>
+			<PVBINARY SCRIPTNAME="MUTE_RM" ACCESS="Read" SAVE="0" EXPORT="1"
+				UNIT0="off" UNIT1="muted" UNIT0_DE="aus" UNIT1_DE="stumm" UNIT0_EN="off" UNIT1_EN="muted"
+				DefaultName="Feedback Mute" DefaultName_DE="Rueckmeldung Stummschaltung" DefaultName_EN="Feedback Mute"
+				DESCRIPTION="Feedback mute state per trivum poll (if reported by trivum)"
+				DESCRIPTION_DE="Rueckmeldung Stummschaltung laut trivum Poll (sofern von trivum gemeldet)"
+				DESCRIPTION_EN="Feedback mute state per trivum poll (if reported by trivum)"/>
+			<PVANALOG SCRIPTNAME="VOLUME_RM" UNIT="[0..100]" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Feedback Volume" DefaultName_DE="Rueckmeldung Lautstaerke" DefaultName_EN="Feedback Volume"
+				DESCRIPTION="Feedback: actual volume per trivum poll"
+				DESCRIPTION_DE="Rueckmeldung: tatsaechliche Lautstaerke laut trivum Poll"
+				DESCRIPTION_EN="Feedback: actual volume per trivum poll"/>
+
+			<!-- Rueckmeldung fuer alle momentanen Kommando-Telegramme (POWER/MUTE/PLAY/PAUSE/
+			     STOP/PLAYPAUSE/NEXT/PREVIOUS/JOIN/UNJOIN/COMMAND): letzter gesendeter Code + Zeit.
+			     Wird direkt beim Senden vom Skript gesetzt (kein Poll noetig, da momentane Aktion). -->
+			<PVANALOG SCRIPTNAME="LASTCOMMAND" UNIT="[0..1099]" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Feedback last command" DefaultName_DE="Rueckmeldung letztes Kommando" DefaultName_EN="Feedback last command"
+				DESCRIPTION="Feedback: last trivum command code sent to this zone"
+				DESCRIPTION_DE="Rueckmeldung: zuletzt an diese Zone gesendeter trivum Kommando-Code"
+				DESCRIPTION_EN="Feedback: last trivum command code sent to this zone"/>
+			<PVTIME   SCRIPTNAME="LASTCOMMAND_TIME" UNIT0="" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Feedback command time" DefaultName_DE="Rueckmeldung Kommandozeit" DefaultName_EN="Feedback command time"
+				DESCRIPTION="Feedback: time of the last sent command"
+				DESCRIPTION_DE="Rueckmeldung: Zeitpunkt des letzten gesendeten Kommandos"
+				DESCRIPTION_EN="Feedback: time of the last sent command"/>
+
+			<PVSTRING SCRIPTNAME="SOURCE" ACCESS="Write" SAVE="0" EXPORT="1"
+				DefaultName="Select source" DefaultName_DE="Quelle waehlen" DefaultName_EN="Select source"
+				DESCRIPTION="Short name of the trivum source, e.g. a1, f2, s, t, p3, i5, y2"
+				DESCRIPTION_DE="Kurzname der trivum Quelle, z.B. a1, f2, s, t, p3, i5, y2"
+				DESCRIPTION_EN="Short name of the trivum source, e.g. a1, f2, s, t, p3, i5, y2"/>
+			<PVANALOG SCRIPTNAME="COMMAND" UNIT="[1..1099]" ACCESS="Write" SAVE="0" EXPORT="1"
+				DefaultName="trivum command (numeric)" DefaultName_DE="trivum Kommando (numerisch)" DefaultName_EN="trivum command (numeric)"
+				DESCRIPTION="Any trivum multi command code (see API documentation)"
+				DESCRIPTION_DE="Beliebiger trivum multi command Code (siehe API Dokumentation)"
+				DESCRIPTION_EN="Any trivum multi command code (see API documentation)"/>
+
+			<PVBINARY SCRIPTNAME="PLAY" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Play" UNIT0_DE="" UNIT1_DE="Play" UNIT0_EN="" UNIT1_EN="Play"
+				DefaultName="Play" DefaultName_DE="Play" DefaultName_EN="Play"
+				DESCRIPTION="Start playback"
+				DESCRIPTION_DE="Wiedergabe starten"
+				DESCRIPTION_EN="Start playback"/>
+			<PVBINARY SCRIPTNAME="PAUSE" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Pause" UNIT0_DE="" UNIT1_DE="Pause" UNIT0_EN="" UNIT1_EN="Pause"
+				DefaultName="Pause" DefaultName_DE="Pause" DefaultName_EN="Pause"
+				DESCRIPTION="Pause playback"
+				DESCRIPTION_DE="Wiedergabe pausieren"
+				DESCRIPTION_EN="Pause playback"/>
+			<PVBINARY SCRIPTNAME="STOP" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Stop" UNIT0_DE="" UNIT1_DE="Stop" UNIT0_EN="" UNIT1_EN="Stop"
+				DefaultName="Stop" DefaultName_DE="Stop" DefaultName_EN="Stop"
+				DESCRIPTION="Stop playback"
+				DESCRIPTION_DE="Wiedergabe stoppen"
+				DESCRIPTION_EN="Stop playback"/>
+			<PVBINARY SCRIPTNAME="PLAYPAUSE" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Play/Pause" UNIT0_DE="" UNIT1_DE="Play/Pause" UNIT0_EN="" UNIT1_EN="Play/Pause"
+				DefaultName="Play/Pause" DefaultName_DE="Play/Pause" DefaultName_EN="Play/Pause"
+				DESCRIPTION="Toggle play/pause"
+				DESCRIPTION_DE="Play/Pause umschalten"
+				DESCRIPTION_EN="Toggle play/pause"/>
+			<PVBINARY SCRIPTNAME="NEXT" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Next" UNIT0_DE="" UNIT1_DE="Weiter" UNIT0_EN="" UNIT1_EN="Next"
+				DefaultName="Next track" DefaultName_DE="Naechster Titel" DefaultName_EN="Next track"
+				DESCRIPTION="Next track/station/preset"
+				DESCRIPTION_DE="Naechster Titel/Sender/Preset"
+				DESCRIPTION_EN="Next track/station/preset"/>
+			<PVBINARY SCRIPTNAME="PREVIOUS" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Previous" UNIT0_DE="" UNIT1_DE="Zurueck" UNIT0_EN="" UNIT1_EN="Previous"
+				DefaultName="Previous track" DefaultName_DE="Voriger Titel" DefaultName_EN="Previous track"
+				DESCRIPTION="Previous track/station/preset"
+				DESCRIPTION_DE="Voriger Titel/Sender/Preset"
+				DESCRIPTION_EN="Previous track/station/preset"/>
+			<PVBINARY SCRIPTNAME="JOIN" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Join" UNIT0_DE="" UNIT1_DE="Gruppieren" UNIT0_EN="" UNIT1_EN="Join"
+				DefaultName="Join group" DefaultName_DE="Gruppe beitreten" DefaultName_EN="Join group"
+				DESCRIPTION="Add zone to the group of the last active zone (ZONECMD_JOIN, no target selectable)"
+				DESCRIPTION_DE="Zone der Gruppe der zuletzt aktiven Zone hinzufuegen (ZONECMD_JOIN, kein Ziel waehlbar)"
+				DESCRIPTION_EN="Add zone to the group of the last active zone (ZONECMD_JOIN, no target selectable)"/>
+			<PVBINARY SCRIPTNAME="UNJOIN" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Leave" UNIT0_DE="" UNIT1_DE="Trennen" UNIT0_EN="" UNIT1_EN="Leave"
+				DefaultName="Leave group" DefaultName_DE="Gruppe verlassen" DefaultName_EN="Leave group"
+				DESCRIPTION="Remove zone from the group (ZONECMD_UNJOIN, no target selectable)"
+				DESCRIPTION_DE="Zone aus der Gruppe entfernen (ZONECMD_UNJOIN, kein Ziel waehlbar)"
+				DESCRIPTION_EN="Remove zone from the group (ZONECMD_UNJOIN, no target selectable)"/>
+
+			<!-- Gezielte Multiroom-Gruppierung ueber trivum createGroup.xml: hier kann
+			     - anders als bei JOIN/UNJOIN oben - die Ziel-Zonen-ID frei angegeben werden.
+			     Alle 4 (oder mehr) Zonen koennen dabei unabhaengig voneinander spielen. -->
+			<PVANALOG SCRIPTNAME="GROUP_TAKE_FROM" UNIT="[0..63]" ACCESS="Write" SAVE="0" EXPORT="1"
+				DefaultName="Take music from zone" DefaultName_DE="Musik von Zone uebernehmen" DefaultName_EN="Take music from zone"
+				DESCRIPTION="Enter a zone ID: this zone takes over the music of the given zone (Get music from channel X)"
+				DESCRIPTION_DE="Zonen-ID eintragen: diese Zone uebernimmt die Musik der angegebenen Zone (Hole dir die Musik aus Kanal X)"
+				DESCRIPTION_EN="Enter a zone ID: this zone takes over the music of the given zone (Get music from channel X)"/>
+			<PVANALOG SCRIPTNAME="GROUP_SEND_TO" UNIT="[0..63]" ACCESS="Write" SAVE="0" EXPORT="1"
+				DefaultName="Send music to zone" DefaultName_DE="Musik an Zone senden" DefaultName_EN="Send music to zone"
+				DESCRIPTION="Enter a zone ID: the given zone takes over the music of this zone (Send music to channel X too)"
+				DESCRIPTION_DE="Zonen-ID eintragen: die angegebene Zone uebernimmt die Musik dieser Zone (Uebertrage die Musik auch auf Kanal X)"
+				DESCRIPTION_EN="Enter a zone ID: the given zone takes over the music of this zone (Send music to channel X too)"/>
+			<PVBINARY SCRIPTNAME="GROUP_LEAVE" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="" UNIT1="Leave group" UNIT0_DE="" UNIT1_DE="Gruppe verlassen" UNIT0_EN="" UNIT1_EN="Leave group"
+				DefaultName="Detach from group" DefaultName_DE="Aus Gruppe loesen" DefaultName_EN="Detach from group"
+				DESCRIPTION="This zone leaves its current group and then plays independently again"
+				DESCRIPTION_DE="Diese Zone verlaesst ihre aktuelle Gruppe und spielt danach eigenstaendig weiter"
+				DESCRIPTION_EN="This zone leaves its current group and then plays independently again"/>
+			<PVANALOG SCRIPTNAME="GROUP_RM" UNIT="[0..255]" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Feedback group status" DefaultName_DE="Rueckmeldung Gruppenstatus" DefaultName_EN="Feedback group status"
+				DESCRIPTION="Feedback: current trivum groupmaster ID of this zone (255 = no group, if reported that way by trivum)"
+				DESCRIPTION_DE="Rueckmeldung: aktuelle trivum groupmaster-ID dieser Zone (255 = keine Gruppe, sofern von trivum so gemeldet)"
+				DESCRIPTION_EN="Feedback: current trivum groupmaster ID of this zone (255 = no group, if reported that way by trivum)"/>
+
+			<PVSTRING SCRIPTNAME="SOURCE_DESC" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Current source" DefaultName_DE="Aktuelle Quelle" DefaultName_EN="Current source"
+				DESCRIPTION="Description of the currently playing source"
+				DESCRIPTION_DE="Beschreibung der aktuell spielenden Quelle"
+				DESCRIPTION_EN="Description of the currently playing source"/>
+			<PVSTRING SCRIPTNAME="SERVICE" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Service" DefaultName_DE="Dienst" DefaultName_EN="Service"
+				DESCRIPTION="Streaming service / source type (e.g. webradio)"
+				DESCRIPTION_DE="Streamingdienst / Quelltyp (z.B. webradio)"
+				DESCRIPTION_EN="Streaming service / source type (e.g. webradio)"/>
+			<PVSTRING SCRIPTNAME="ARTIST" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Artist" DefaultName_DE="Interpret" DefaultName_EN="Artist"
+				DESCRIPTION="Current artist"
+				DESCRIPTION_DE="Aktueller Interpret"
+				DESCRIPTION_EN="Current artist"/>
+			<PVSTRING SCRIPTNAME="ALBUM" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Album" DefaultName_DE="Album" DefaultName_EN="Album"
+				DESCRIPTION="Current album"
+				DESCRIPTION_DE="Aktuelles Album"
+				DESCRIPTION_EN="Current album"/>
+			<PVSTRING SCRIPTNAME="TRACK" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Track" DefaultName_DE="Titel" DefaultName_EN="Track"
+				DESCRIPTION="Current track"
+				DESCRIPTION_DE="Aktueller Titel"
+				DESCRIPTION_EN="Current track"/>
+			<PVSTRING SCRIPTNAME="IMAGEURL" ACCESS="Read" SAVE="0" EXPORT="1"
+				DefaultName="Cover URL" DefaultName_DE="Cover-URL" DefaultName_EN="Cover URL"
+				DESCRIPTION="URL of the current cover/icon"
+				DESCRIPTION_DE="URL des aktuellen Covers/Icons"
+				DESCRIPTION_EN="URL of the current cover/icon"/>
+		</PVFOLDER>
+	</PVITEMS>
+
+	<RESOURCES>
+		<HTTP SCRIPTNAME="HTTP" USERTYPE="http_rq"
+			DEFAULTNAME="trivum HTTP requester" DEFAULTNAME_DE="trivum HTTP Requester" DEFAULTNAME_EN="trivum HTTP requester"/>
+	</RESOURCES>
+</SDVINTERFACE>

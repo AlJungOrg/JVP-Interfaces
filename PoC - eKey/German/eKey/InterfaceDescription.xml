@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SDVINTERFACE VERSION="1">
+	<INFO NAME="eKey"
+	      NAME_DE="eKey"
+	      NAME_EN="eKey"
+	      AUTHOR="Albrecht"
+	      DESCRIPTION="eKey fingerprint access: receives events from an ekey Converter UDP/LAN (home/multi protocol) and/or from ekey bionyx function webhooks"
+	      DESCRIPTION_DE="eKey Fingerprint-Zutritt: empfaengt Ereignisse vom ekey Converter UDP/LAN (Protokoll home/multi) und/oder von ekey bionyx Function-Webhooks"
+	      DESCRIPTION_EN="eKey fingerprint access: receives events from an ekey Converter UDP/LAN (home/multi protocol) and/or from ekey bionyx function webhooks"
+	      VERSION="1"
+	      APIVERSION="5"
+	      POLLTIME="250"
+	      HELPFILE="InterfaceHelp_EN.pdf"
+	      HELPFILE_DE="InterfaceHelp_DE.pdf"
+	      HELPFILE_EN="InterfaceHelp_EN.pdf"/>
+	<PVITEMS>
+		<PVFOLDER SCRIPTNAME="CONFIGURATION" CREATIONTYPE="Unique" USERTYPE="configuration_t"
+		          DEFAULTNAME="Configuration" DEFAULTNAME_DE="Konfiguration" DEFAULTNAME_EN="Configuration">
+			<PVSTRING SCRIPTNAME="UDP_PROTOCOL"
+			          DEFAULTNAME="UDP protocol (home/multi)" DEFAULTNAME_DE="UDP-Protokoll (home/multi)"
+			          ACCESS="Read/Write" SAVE="1" EXPORT="1"
+			          DESCRIPTION="Protocol format configured on the ekey Converter UDP/LAN: 'home' or 'multi'. Must match the setting in the ekey ConfigConverterUDP tool."
+			          DESCRIPTION_DE="Am ekey Converter UDP/LAN eingestelltes Protokollformat: 'home' oder 'multi'. Muss mit der Einstellung im ekey ConfigConverterUDP-Tool uebereinstimmen."/>
+			<PVSTRING SCRIPTNAME="UDP_SEPARATOR"
+			          DEFAULTNAME="UDP field separator" DEFAULTNAME_DE="UDP-Feldtrennzeichen"
+			          ACCESS="Read/Write" SAVE="1" EXPORT="1"
+			          DESCRIPTION="Single-character field separator configured on the ekey Converter (factory default '?')."
+			          DESCRIPTION_DE="Im ekey Converter konfiguriertes einzelnes Trennzeichen (Werkseinstellung '?')."/>
+			<PVSTRING SCRIPTNAME="BIONYX_TOKEN"
+			          DEFAULTNAME="bionyx webhook bearer token" DEFAULTNAME_DE="bionyx-Webhook Bearer-Token"
+			          ACCESS="Read/Write" SAVE="1" EXPORT="1"
+			          DESCRIPTION="Shared secret expected in the 'Authorization: Bearer &lt;token&gt;' header of the ekey bionyx function webhook. Leave empty to disable the check (not recommended)."
+			          DESCRIPTION_DE="Gemeinsames Geheimnis, das im Header 'Authorization: Bearer &lt;token&gt;' des ekey bionyx Function-Webhooks erwartet wird. Leer lassen deaktiviert die Pruefung (nicht empfohlen)."/>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="STATUS" CREATIONTYPE="Unique" USERTYPE="status_t"
+		          DEFAULTNAME="Status" DEFAULTNAME_DE="Status" DEFAULTNAME_EN="Status">
+			<PVBINARY SCRIPTNAME="ERROR" UNIT0="ok" UNIT1="error" UNIT0_DE="ok" UNIT1_DE="Fehler"
+			          DEFAULTNAME="Error" DEFAULTNAME_DE="Fehler"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Interface error flag" DESCRIPTION_DE="Fehlerkennung der Schnittstelle"/>
+			<PVBINARY SCRIPTNAME="UDP_RUNNING" UNIT0="stopped" UNIT1="running" UNIT0_DE="gestoppt" UNIT1_DE="aktiv"
+			          DEFAULTNAME="UDP receiver" DEFAULTNAME_DE="UDP-Empfaenger"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Whether the UDP receiver for the ekey Converter is running" DESCRIPTION_DE="Ob der UDP-Empfaenger fuer den ekey Converter aktiv ist"/>
+			<PVBINARY SCRIPTNAME="HTTP_RUNNING" UNIT0="stopped" UNIT1="running" UNIT0_DE="gestoppt" UNIT1_DE="aktiv"
+			          DEFAULTNAME="bionyx webhook receiver" DEFAULTNAME_DE="bionyx-Webhook-Empfaenger"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Whether the embedded HTTP server for ekey bionyx webhooks is running" DESCRIPTION_DE="Ob der eingebettete HTTP-Server fuer ekey bionyx Webhooks aktiv ist"/>
+			<PVSTRING SCRIPTNAME="LAST_SOURCE" DEFAULTNAME="Last source" DEFAULTNAME_DE="Letzte Quelle"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="'UDP' or 'BIONYX' - which channel delivered the last event" DESCRIPTION_DE="'UDP' oder 'BIONYX' - ueber welchen Kanal das letzte Ereignis kam"/>
+			<PVSTRING SCRIPTNAME="LAST_USER_ID" DEFAULTNAME="Last user ID" DEFAULTNAME_DE="Letzte Benutzer-ID"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="UserID from the last UDP event, or the bionyx 'user' field"/>
+			<PVSTRING SCRIPTNAME="LAST_USER_NAME" DEFAULTNAME="Last user name" DEFAULTNAME_DE="Letzter Benutzername"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="User name (only present in the 'multi' UDP protocol, or from bionyx)"/>
+			<PVSTRING SCRIPTNAME="LAST_FINGER_ID" DEFAULTNAME="Last finger ID" DEFAULTNAME_DE="Letzte Finger-ID"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Finger ID from the last event"/>
+			<PVSTRING SCRIPTNAME="LAST_SERIAL" DEFAULTNAME="Last scanner serial" DEFAULTNAME_DE="Letzte Scanner-Seriennummer"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Scanner serial number from the last UDP event"/>
+			<PVSTRING SCRIPTNAME="LAST_SCANNER_NAME" DEFAULTNAME="Last scanner/terminal name" DEFAULTNAME_DE="Letzter Scanner-/Terminalname"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Scanner name ('multi' protocol) or bionyx 'terminal' field"/>
+			<PVSTRING SCRIPTNAME="LAST_FUNCTION" DEFAULTNAME="Last bionyx function" DEFAULTNAME_DE="Letzte bionyx-Funktion"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Value of the 'function' field from the last bionyx webhook call"/>
+			<PVSTRING SCRIPTNAME="LAST_ACTION_CODE" DEFAULTNAME="Last action code" DEFAULTNAME_DE="Letzter Aktionscode"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Raw action code (1-8) from the last UDP event. Meaning must be verified against the ekey Converter documentation for the installed firmware." DESCRIPTION_DE="Roher Aktionscode (1-8) des letzten UDP-Ereignisses. Bedeutung anhand der ekey-Converter-Dokumentation der installierten Firmware pruefen."/>
+			<PVSTRING SCRIPTNAME="LAST_RELAY_ID" DEFAULTNAME="Last relay/input ID" DEFAULTNAME_DE="Letzte Relais-/Eingangs-ID"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Relay ID (home) or Input ID (multi) from the last UDP event"/>
+			<PVSTRING SCRIPTNAME="LAST_RAW" DEFAULTNAME="Last raw payload" DEFAULTNAME_DE="Letzte Rohdaten"
+			          ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Unparsed payload of the last event, for troubleshooting"/>
+			<PVTIME SCRIPTNAME="LAST_TIMESTAMP" DEFAULTNAME="Last event time" DEFAULTNAME_DE="Zeit letztes Ereignis"
+			        ACCESS="Read" SAVE="0" EXPORT="1" DESCRIPTION="Local time the last event was received"/>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="Function" CREATIONTYPE="Multiple" USERTYPE="function_t"
+		          DEFAULTNAME="Function" DEFAULTNAME_DE="Funktion" DEFAULTNAME_EN="Function">
+			<PVSTRING SCRIPTNAME="MATCH_USERID"
+			          DEFAULTNAME="Match: UDP user ID" DEFAULTNAME_DE="Zuordnung: UDP Benutzer-ID"
+			          ACCESS="Read/Write" SAVE="1" EXPORT="1"
+			          DESCRIPTION="UserID (ekey Converter UDP protocol) that shall trigger this function. Leave empty to ignore UDP events for this function."
+			          DESCRIPTION_DE="UserID (ekey Converter UDP-Protokoll), die diese Funktion ausloesen soll. Leer lassen, um UDP-Ereignisse fuer diese Funktion zu ignorieren."/>
+			<PVSTRING SCRIPTNAME="MATCH_FINGERID"
+			          DEFAULTNAME="Match: UDP finger ID (optional)" DEFAULTNAME_DE="Zuordnung: UDP Finger-ID (optional)"
+			          ACCESS="Read/Write" SAVE="1" EXPORT="1"
+			          DESCRIPTION="Optional: only trigger for this specific finger ID. Leave empty to match any finger of MATCH_USERID."
+			          DESCRIPTION_DE="Optional: nur bei dieser Finger-ID ausloesen. Leer lassen, um jeden Finger von MATCH_USERID zu akzeptieren."/>
+			<PVSTRING SCRIPTNAME="MATCH_ACTIONCODE"
+			          DEFAULTNAME="Match: UDP action code (optional)" DEFAULTNAME_DE="Zuordnung: UDP Aktionscode (optional)"
+			          ACCESS="Read/Write" SAVE="1" EXPORT="1"
+			          DESCRIPTION="Optional: only trigger for this action code (e.g. to react only on 'access granted'). Leave empty to ignore the action code."
+			          DESCRIPTION_DE="Optional: nur bei diesem Aktionscode ausloesen (z.B. nur bei 'Zutritt gewaehrt'). Leer lassen, um den Aktionscode zu ignorieren."/>
+			<PVSTRING SCRIPTNAME="MATCH_BIONYX_FUNCTION"
+			          DEFAULTNAME="Match: bionyx function name" DEFAULTNAME_DE="Zuordnung: bionyx Funktionsname"
+			          ACCESS="Read/Write" SAVE="1" EXPORT="1"
+			          DESCRIPTION="Value of the 'function' field sent in the ekey bionyx webhook body that shall trigger this function. Leave empty to ignore bionyx events for this function."
+			          DESCRIPTION_DE="Wert des 'function'-Felds im ekey bionyx Webhook-Body, der diese Funktion ausloesen soll. Leer lassen, um bionyx-Ereignisse fuer diese Funktion zu ignorieren."/>
+			<PVBINARY SCRIPTNAME="TRIGGERED" UNIT0="idle" UNIT1="triggered" UNIT0_DE="ruht" UNIT1_DE="ausgeloest"
+			          DEFAULTNAME="Triggered" DEFAULTNAME_DE="Ausgeloest"
+			          ACCESS="Read" SAVE="0" EXPORT="1"
+			          DESCRIPTION="Pulses to 1 for PULSE_MS milliseconds when a matching event is received"
+			          DESCRIPTION_DE="Springt fuer PULSE_MS Millisekunden auf 1, wenn ein passendes Ereignis eintrifft"/>
+			<PVANALOG SCRIPTNAME="PULSE_MS" UNIT="[500..60000]"
+			          DEFAULTNAME="Pulse length (ms)" DEFAULTNAME_DE="Impulsdauer (ms)"
+			          ACCESS="Read/Write" SAVE="1" EXPORT="1"
+			          DESCRIPTION="Duration in milliseconds the TRIGGERED output stays 1. Timer resolution is about 1 second."
+			          DESCRIPTION_DE="Dauer in Millisekunden, die der Ausgang TRIGGERED auf 1 bleibt. Zeitaufloesung ca. 1 Sekunde."/>
+			<PVTIME SCRIPTNAME="LAST_TRIGGERED" DEFAULTNAME="Last triggered" DEFAULTNAME_DE="Zuletzt ausgeloest"
+			        ACCESS="Read" SAVE="0" EXPORT="1"/>
+		</PVFOLDER>
+	</PVITEMS>
+
+	<RESOURCES>
+		<UDPPORT SCRIPTNAME="UDP_EKEY" USERTYPE="udp_rq" DEFAULTNAME="ekey Converter UDP" DEFAULTNAME_DE="ekey Converter UDP" LOCALPORT="41000"/>
+		<HTTPSERVER SCRIPTNAME="HTTP_SRV" USERTYPE="http_srv" DEFAULTNAME="ekey bionyx webhook" DEFAULTNAME_DE="ekey bionyx Webhook" LOCALPORT="8090" USESSL="0" USEBEARERTOKEN="0"/>
+	</RESOURCES>
+</SDVINTERFACE>

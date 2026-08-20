@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SDVINTERFACE VERSION="1">
+	<INFO NAME="JUNGHOME_Gateway" AUTHOR="JVP-JUNGHOME"
+		DESCRIPTION="Anbindung an die REST-API des JUNG HOME Gateway (api-junghome), inkl. lokaler HTTP-Bridge (eigener REST-Server fuer Drittsysteme)"
+		DESCRIPTION_DE="Anbindung an die REST-API des JUNG HOME Gateway (api-junghome), inkl. lokaler HTTP-Bridge (eigener REST-Server fuer Drittsysteme)"
+		DESCRIPTION_EN="Connection to the JUNG HOME Gateway REST API (api-junghome), incl. local HTTP bridge (own REST server for third-party systems)"
+		VERSION="1" APIVERSION="5" POLLTIME="1000"/>
+	<PVITEMS>
+		<PVFOLDER SCRIPTNAME="CONFIGURATION" CREATIONTYPE="Unique" USERTYPE="configuration_t"
+			DEFAULTNAME="Konfiguration" DEFAULTNAME_DE="Konfiguration" DEFAULTNAME_EN="Configuration">
+			<PVSTRING  SCRIPTNAME="HOST"
+				DEFAULTNAME="Gateway-Adresse" DEFAULTNAME_DE="Gateway-Adresse" DEFAULTNAME_EN="Gateway address"
+				ACCESS="Read/Write" SAVE="1"
+				DESCRIPTION="IP-Adresse oder Hostname des JUNG HOME Gateway"
+				DESCRIPTION_DE="IP-Adresse oder Hostname des JUNG HOME Gateway"
+				DESCRIPTION_EN="IP address or hostname of the JUNG HOME Gateway" EXPORT="1"/>
+			<PVANALOG  SCRIPTNAME="PORT" UNIT="[1..65535]"
+				DEFAULTNAME="Port" DEFAULTNAME_DE="Port" DEFAULTNAME_EN="Port"
+				ACCESS="Read/Write" SAVE="1"
+				DESCRIPTION="TCP-Port des Gateway (Standard 443, HTTPS)"
+				DESCRIPTION_DE="TCP-Port des Gateway (Standard 443, HTTPS)"
+				DESCRIPTION_EN="TCP port of the gateway (default 443, HTTPS)" EXPORT="1"/>
+			<PVBINARY  SCRIPTNAME="USE_HTTPS"
+				UNIT0="HTTP" UNIT1="HTTPS" UNIT0_DE="HTTP" UNIT1_DE="HTTPS" UNIT0_EN="HTTP" UNIT1_EN="HTTPS"
+				DEFAULTNAME="Protokoll" DEFAULTNAME_DE="Protokoll" DEFAULTNAME_EN="Protocol"
+				ACCESS="Read/Write" SAVE="1"
+				DESCRIPTION="HTTPS verwenden (empfohlen, Standard)"
+				DESCRIPTION_DE="HTTPS verwenden (empfohlen, Standard)"
+				DESCRIPTION_EN="Use HTTPS (recommended, default)" EXPORT="1"/>
+			<PVSTRING  SCRIPTNAME="USER_NAME"
+				DEFAULTNAME="Registrierungsname" DEFAULTNAME_DE="Registrierungsname" DEFAULTNAME_EN="Registration name"
+				ACCESS="Read/Write" SAVE="1"
+				DESCRIPTION="Name, unter dem sich JVP am Gateway registriert (optional, Default 'JVP')"
+				DESCRIPTION_DE="Name, unter dem sich JVP am Gateway registriert (optional, Default 'JVP')"
+				DESCRIPTION_EN="Name JVP registers itself under at the gateway (optional, default 'JVP')" EXPORT="1"/>
+			<PVSTRING  SCRIPTNAME="TOKEN"
+				DEFAULTNAME="API-Token" DEFAULTNAME_DE="API-Token" DEFAULTNAME_EN="API token"
+				ACCESS="Read" SAVE="1"
+				DESCRIPTION="Vom Gateway vergebenes API-Token (wird automatisch bei der Kopplung ermittelt und gespeichert)"
+				DESCRIPTION_DE="Vom Gateway vergebenes API-Token (wird automatisch bei der Kopplung ermittelt und gespeichert)"
+				DESCRIPTION_EN="API token issued by the gateway (obtained and stored automatically during pairing)" EXPORT="0"/>
+			<PVBINARY  SCRIPTNAME="START_PAIRING"
+				UNIT0="-" UNIT1="Start" UNIT0_DE="-" UNIT1_DE="Start" UNIT0_EN="-" UNIT1_EN="Start"
+				DEFAULTNAME="Kopplung starten" DEFAULTNAME_DE="Kopplung starten" DEFAULTNAME_EN="Start pairing"
+				ACCESS="Write" SAVE="0"
+				DESCRIPTION="Zuerst die Taste am JUNG HOME Gateway druecken, danach hier auf 1 setzen um das API-Token zu erhalten"
+				DESCRIPTION_DE="Zuerst die Taste am JUNG HOME Gateway druecken, danach hier auf 1 setzen um das API-Token zu erhalten"
+				DESCRIPTION_EN="First press the button on the JUNG HOME Gateway, then set this to 1 to obtain the API token" EXPORT="1"/>
+			<PVBINARY  SCRIPTNAME="DEFAULTS_SET"
+				UNIT0="nein" UNIT1="ja" UNIT0_DE="nein" UNIT1_DE="ja" UNIT0_EN="no" UNIT1_EN="yes"
+				DEFAULTNAME="Standardwerte gesetzt" DEFAULTNAME_DE="Standardwerte gesetzt" DEFAULTNAME_EN="Defaults set"
+				ACCESS="Read" SAVE="1"
+				DESCRIPTION="Interner Merker: verhindert, dass die einmalig gesetzten Standardwerte (z.B. HTTPS) spaeter erneute Aenderungen ueberschreiben"
+				DESCRIPTION_DE="Interner Merker: verhindert, dass die einmalig gesetzten Standardwerte (z.B. HTTPS) spaeter erneute Aenderungen ueberschreiben"
+				DESCRIPTION_EN="Internal flag: prevents the one-time default values (e.g. HTTPS) from overwriting a later deliberate change" EXPORT="0"/>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="STATUS" CREATIONTYPE="Unique" USERTYPE="status_t"
+			DEFAULTNAME="Status" DEFAULTNAME_DE="Status" DEFAULTNAME_EN="Status">
+			<PVBINARY SCRIPTNAME="CONNECTED"
+				UNIT0="getrennt" UNIT1="verbunden" UNIT0_DE="getrennt" UNIT1_DE="verbunden" UNIT0_EN="disconnected" UNIT1_EN="connected"
+				DEFAULTNAME="Verbunden" DEFAULTNAME_DE="Verbunden" DEFAULTNAME_EN="Connected"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Gueltiges API-Token vorhanden"
+				DESCRIPTION_DE="Gueltiges API-Token vorhanden"
+				DESCRIPTION_EN="Valid API token present" EXPORT="1"/>
+			<PVBINARY SCRIPTNAME="PAIRING"
+				UNIT0="inaktiv" UNIT1="wartet auf Tastendruck" UNIT0_DE="inaktiv" UNIT1_DE="wartet auf Tastendruck" UNIT0_EN="inactive" UNIT1_EN="waiting for button press"
+				DEFAULTNAME="Kopplung laeuft" DEFAULTNAME_DE="Kopplung laeuft" DEFAULTNAME_EN="Pairing in progress"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Registrierung laeuft - Taste am Gateway druecken"
+				DESCRIPTION_DE="Registrierung laeuft - Taste am Gateway druecken"
+				DESCRIPTION_EN="Registration in progress - press the button on the gateway" EXPORT="1"/>
+			<PVBINARY SCRIPTNAME="ERROR"
+				UNIT0="ok" UNIT1="Fehler" UNIT0_DE="ok" UNIT1_DE="Fehler" UNIT0_EN="ok" UNIT1_EN="error"
+				DEFAULTNAME="Fehler" DEFAULTNAME_DE="Fehler" DEFAULTNAME_EN="Error"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Letzte Aktion ist fehlgeschlagen, siehe LAST_ERROR"
+				DESCRIPTION_DE="Letzte Aktion ist fehlgeschlagen, siehe LAST_ERROR"
+				DESCRIPTION_EN="The last action failed, see LAST_ERROR" EXPORT="1"/>
+			<PVSTRING SCRIPTNAME="LAST_ERROR"
+				DEFAULTNAME="Letzte Fehlermeldung" DEFAULTNAME_DE="Letzte Fehlermeldung" DEFAULTNAME_EN="Last error message"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Klartext der letzten Fehlermeldung"
+				DESCRIPTION_DE="Klartext der letzten Fehlermeldung"
+				DESCRIPTION_EN="Plain-text of the last error message" EXPORT="1"/>
+			<PVSTRING SCRIPTNAME="API_VERSION"
+				DEFAULTNAME="API-Version" DEFAULTNAME_DE="API-Version" DEFAULTNAME_EN="API version"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Version von api-junghome laut Gateway"
+				DESCRIPTION_DE="Version von api-junghome laut Gateway"
+				DESCRIPTION_EN="api-junghome version as reported by the gateway" EXPORT="1"/>
+			<PVSTRING SCRIPTNAME="GATEWAY_VERSION"
+				DEFAULTNAME="Gateway-Version" DEFAULTNAME_DE="Gateway-Version" DEFAULTNAME_EN="Gateway version"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Release-Version des JUNG HOME Gateway"
+				DESCRIPTION_DE="Release-Version des JUNG HOME Gateway"
+				DESCRIPTION_EN="Release version of the JUNG HOME Gateway" EXPORT="1"/>
+			<PVTIME   SCRIPTNAME="LAST_SYNC" UNIT0=""
+				DEFAULTNAME="Letzter Abgleich" DEFAULTNAME_DE="Letzter Abgleich" DEFAULTNAME_EN="Last sync"
+				ACCESS="Read" SAVE="1"
+				DESCRIPTION="Zeitpunkt des letzten erfolgreichen Abgleichs von Functions/Scenes/Groups"
+				DESCRIPTION_DE="Zeitpunkt des letzten erfolgreichen Abgleichs von Functions/Scenes/Groups"
+				DESCRIPTION_EN="Time of the last successful sync of Functions/Scenes/Groups" EXPORT="1"/>
+			<PVANALOG SCRIPTNAME="FUNCTION_COUNT" UNIT="[0..100000]"
+				DEFAULTNAME="Anzahl Functions" DEFAULTNAME_DE="Anzahl Functions" DEFAULTNAME_EN="Function count"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Anzahl der vom Gateway gemeldeten Functions"
+				DESCRIPTION_DE="Anzahl der vom Gateway gemeldeten Functions"
+				DESCRIPTION_EN="Number of Functions reported by the gateway" EXPORT="1"/>
+			<PVBINARY SCRIPTNAME="RESYNC"
+				UNIT0="-" UNIT1="Start" UNIT0_DE="-" UNIT1_DE="Start" UNIT0_EN="-" UNIT1_EN="Start"
+				DEFAULTNAME="Neu abgleichen" DEFAULTNAME_DE="Neu abgleichen" DEFAULTNAME_EN="Resync"
+				ACCESS="Write" SAVE="0"
+				DESCRIPTION="Auf 1 setzen um Functions/Scenes/Groups neu vom Gateway abzufragen"
+				DESCRIPTION_DE="Auf 1 setzen um Functions/Scenes/Groups neu vom Gateway abzufragen"
+				DESCRIPTION_EN="Set to 1 to re-fetch Functions/Scenes/Groups from the gateway" EXPORT="1"/>
+			<PVSTRING SCRIPTNAME="FUNCTIONS_JSON"
+				DEFAULTNAME="Functions (JSON)" DEFAULTNAME_DE="Functions (JSON)" DEFAULTNAME_EN="Functions (JSON)"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Rohdaten aller Functions (id/type/label/datapoints) zum Nachschlagen der IDs fuer die Function-/Datapoint-Instanzen"
+				DESCRIPTION_DE="Rohdaten aller Functions (id/type/label/datapoints) zum Nachschlagen der IDs fuer die Function-/Datapoint-Instanzen"
+				DESCRIPTION_EN="Raw data of all Functions (id/type/label/datapoints), for looking up IDs for Function/Datapoint instances" EXPORT="1"/>
+			<PVSTRING SCRIPTNAME="SCENES_JSON"
+				DEFAULTNAME="Scenes (JSON)" DEFAULTNAME_DE="Scenes (JSON)" DEFAULTNAME_EN="Scenes (JSON)"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Rohdaten aller Scenes (id/label) zum Nachschlagen der IDs fuer die Scene-Instanzen"
+				DESCRIPTION_DE="Rohdaten aller Scenes (id/label) zum Nachschlagen der IDs fuer die Scene-Instanzen"
+				DESCRIPTION_EN="Raw data of all Scenes (id/label), for looking up IDs for Scene instances" EXPORT="1"/>
+			<PVSTRING SCRIPTNAME="GROUPS_JSON"
+				DEFAULTNAME="Groups (JSON, Info)" DEFAULTNAME_DE="Groups (JSON, Info)" DEFAULTNAME_EN="Groups (JSON, info)"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Informative Liste aller Gruppen (id/address/name), rein lesend"
+				DESCRIPTION_DE="Informative Liste aller Gruppen (id/address/name), rein lesend"
+				DESCRIPTION_EN="Informational list of all groups (id/address/name), read-only" EXPORT="1"/>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="BRIDGE" CREATIONTYPE="Unique" USERTYPE="bridge_t"
+			DEFAULTNAME="HTTP Bridge" DEFAULTNAME_DE="HTTP Bridge" DEFAULTNAME_EN="HTTP bridge">
+			<PVSTRING  SCRIPTNAME="BRIDGE_TOKEN"
+				DEFAULTNAME="Bridge-Token" DEFAULTNAME_DE="Bridge-Token" DEFAULTNAME_EN="Bridge token"
+				ACCESS="Read/Write" SAVE="1"
+				DESCRIPTION="Optionales Token fuer die lokale HTTP-Bridge (Header 'Authorization: Bearer &lt;TOKEN&gt;' oder 'token: &lt;TOKEN&gt;'). Leer = keine Pruefung, jeder im lokalen Netz kann die Bridge nutzen."
+				DESCRIPTION_DE="Optionales Token fuer die lokale HTTP-Bridge (Header 'Authorization: Bearer &lt;TOKEN&gt;' oder 'token: &lt;TOKEN&gt;'). Leer = keine Pruefung, jeder im lokalen Netz kann die Bridge nutzen."
+				DESCRIPTION_EN="Optional token for the local HTTP bridge (header 'Authorization: Bearer &lt;TOKEN&gt;' or 'token: &lt;TOKEN&gt;'). Empty = no check, anyone on the local network can use the bridge." EXPORT="1"/>
+			<PVANALOG  SCRIPTNAME="BRIDGE_PORT" UNIT="[1..65535]"
+				DEFAULTNAME="Bridge-Port" DEFAULTNAME_DE="Bridge-Port" DEFAULTNAME_EN="Bridge port"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="TCP-Port, auf dem die lokale HTTP-Bridge lauscht (siehe RESOURCES/HTTPSERVER, LOCALPORT)"
+				DESCRIPTION_DE="TCP-Port, auf dem die lokale HTTP-Bridge lauscht (siehe RESOURCES/HTTPSERVER, LOCALPORT)"
+				DESCRIPTION_EN="TCP port the local HTTP bridge listens on (see RESOURCES/HTTPSERVER, LOCALPORT)" EXPORT="1"/>
+			<PVANALOG  SCRIPTNAME="BRIDGE_REQUEST_COUNT" UNIT="[0..1000000]"
+				DEFAULTNAME="Anzahl Anfragen" DEFAULTNAME_DE="Anzahl Anfragen" DEFAULTNAME_EN="Request count"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Anzahl der seit Skriptstart empfangenen Bridge-Anfragen"
+				DESCRIPTION_DE="Anzahl der seit Skriptstart empfangenen Bridge-Anfragen"
+				DESCRIPTION_EN="Number of bridge requests received since script start" EXPORT="1"/>
+			<PVTIME    SCRIPTNAME="BRIDGE_LAST_REQUEST" UNIT0=""
+				DEFAULTNAME="Letzte Anfrage" DEFAULTNAME_DE="Letzte Anfrage" DEFAULTNAME_EN="Last request"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="Zeitpunkt der letzten empfangenen Bridge-Anfrage"
+				DESCRIPTION_DE="Zeitpunkt der letzten empfangenen Bridge-Anfrage"
+				DESCRIPTION_EN="Time of the last received bridge request" EXPORT="1"/>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="Function" CREATIONTYPE="Multiple" USERTYPE="function_t"
+			DEFAULTNAME="Function" DEFAULTNAME_DE="Function" DEFAULTNAME_EN="Function">
+			<PVSTRING SCRIPTNAME="FUNCTION_ID"
+				DEFAULTNAME="Function-ID" DEFAULTNAME_DE="Function-ID" DEFAULTNAME_EN="Function ID"
+				ACCESS="Read/Write" SAVE="1"
+				DESCRIPTION="ID der Function laut Gateway (siehe STATUS.FUNCTIONS_JSON). Einmal pro physischem Geraet, darunter beliebig viele Datapoint-Unterinstanzen anlegen."
+				DESCRIPTION_DE="ID der Function laut Gateway (siehe STATUS.FUNCTIONS_JSON). Einmal pro physischem Geraet, darunter beliebig viele Datapoint-Unterinstanzen anlegen."
+				DESCRIPTION_EN="Function ID as reported by the gateway (see STATUS.FUNCTIONS_JSON). Once per physical device; add any number of nested Datapoint instances below it." EXPORT="1"/>
+			<PVSTRING SCRIPTNAME="FUNCTION_LABEL"
+				DEFAULTNAME="Bezeichnung" DEFAULTNAME_DE="Bezeichnung" DEFAULTNAME_EN="Label"
+				ACCESS="Read" SAVE="1"
+				DESCRIPTION="Vom Gateway gemeldete Bezeichnung der Function. Wird zusaetzlich per E:SetFolderName in den Ordnernamen dieser Instanz uebernommen."
+				DESCRIPTION_DE="Vom Gateway gemeldete Bezeichnung der Function. Wird zusaetzlich per E:SetFolderName in den Ordnernamen dieser Instanz uebernommen."
+				DESCRIPTION_EN="Label of the Function as reported by the gateway. Also written into this instance's folder name via E:SetFolderName." EXPORT="1"/>
+			<PVSTRING SCRIPTNAME="FUNCTION_TYPE"
+				DEFAULTNAME="Function-Typ" DEFAULTNAME_DE="Function-Typ" DEFAULTNAME_EN="Function type"
+				ACCESS="Read" SAVE="1"
+				DESCRIPTION="Typ der Function laut Gateway (z.B. switch, dimmer, blind)"
+				DESCRIPTION_DE="Typ der Function laut Gateway (z.B. switch, dimmer, blind)"
+				DESCRIPTION_EN="Function type as reported by the gateway (e.g. switch, dimmer, blind)" EXPORT="1"/>
+			<PVBINARY SCRIPTNAME="FUNCTION_VALID"
+				UNIT0="unbekannt" UNIT1="gefunden" UNIT0_DE="unbekannt" UNIT1_DE="gefunden" UNIT0_EN="unknown" UNIT1_EN="found"
+				DEFAULTNAME="Gefunden" DEFAULTNAME_DE="Gefunden" DEFAULTNAME_EN="Found"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="1 wenn die Function beim letzten Abgleich am Gateway gefunden wurde"
+				DESCRIPTION_DE="1 wenn die Function beim letzten Abgleich am Gateway gefunden wurde"
+				DESCRIPTION_EN="1 if the Function was found on the gateway during the last sync" EXPORT="1"/>
+
+			<PVFOLDER SCRIPTNAME="Datapoint" CREATIONTYPE="Multiple" USERTYPE="datapoint_t"
+				DEFAULTNAME="Datapoint" DEFAULTNAME_DE="Datapoint" DEFAULTNAME_EN="Datapoint">
+				<PVSTRING SCRIPTNAME="DATAPOINT_ID"
+					DEFAULTNAME="Datapoint-ID" DEFAULTNAME_DE="Datapoint-ID" DEFAULTNAME_EN="Datapoint ID"
+					ACCESS="Read/Write" SAVE="1"
+					DESCRIPTION="ID eines Datapoints dieser Function (siehe STATUS.FUNCTIONS_JSON), z.B. switch oder brightness"
+					DESCRIPTION_DE="ID eines Datapoints dieser Function (siehe STATUS.FUNCTIONS_JSON), z.B. switch oder brightness"
+					DESCRIPTION_EN="ID of a Datapoint of this Function (see STATUS.FUNCTIONS_JSON), e.g. switch or brightness" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="DATAPOINT_TYPE"
+					DEFAULTNAME="Datapoint-Typ" DEFAULTNAME_DE="Datapoint-Typ" DEFAULTNAME_EN="Datapoint type"
+					ACCESS="Read" SAVE="1"
+					DESCRIPTION="Typ des Datapoints laut Gateway"
+					DESCRIPTION_DE="Typ des Datapoints laut Gateway"
+					DESCRIPTION_EN="Datapoint type as reported by the gateway" EXPORT="1"/>
+				<PVBINARY SCRIPTNAME="DATAPOINT_VALID"
+					UNIT0="unbekannt" UNIT1="gefunden" UNIT0_DE="unbekannt" UNIT1_DE="gefunden" UNIT0_EN="unknown" UNIT1_EN="found"
+					DEFAULTNAME="Gefunden" DEFAULTNAME_DE="Gefunden" DEFAULTNAME_EN="Found"
+					ACCESS="Read" SAVE="0"
+					DESCRIPTION="1 wenn der Datapoint beim letzten Abgleich am Gateway gefunden wurde"
+					DESCRIPTION_DE="1 wenn der Datapoint beim letzten Abgleich am Gateway gefunden wurde"
+					DESCRIPTION_EN="1 if the Datapoint was found on the gateway during the last sync" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE1_KEY"
+					DEFAULTNAME="Wert 1: Schluessel" DEFAULTNAME_DE="Wert 1: Schluessel" DEFAULTNAME_EN="Value 1: key"
+					ACCESS="Read" SAVE="1"
+					DESCRIPTION="Key des 1. Datapoint-Werts (z.B. on_off, brightness, position)"
+					DESCRIPTION_DE="Key des 1. Datapoint-Werts (z.B. on_off, brightness, position)"
+					DESCRIPTION_EN="Key of the 1st Datapoint value (e.g. on_off, brightness, position)" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE1"
+					DEFAULTNAME="Wert 1" DEFAULTNAME_DE="Wert 1" DEFAULTNAME_EN="Value 1"
+					ACCESS="Read/Write" SAVE="1"
+					DESCRIPTION="Wert 1 als Rohtext, Bedeutung siehe VALUE1_KEY"
+					DESCRIPTION_DE="Wert 1 als Rohtext, Bedeutung siehe VALUE1_KEY"
+					DESCRIPTION_EN="Value 1 as raw text, see VALUE1_KEY for its meaning" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE2_KEY"
+					DEFAULTNAME="Wert 2: Schluessel" DEFAULTNAME_DE="Wert 2: Schluessel" DEFAULTNAME_EN="Value 2: key"
+					ACCESS="Read" SAVE="1"
+					DESCRIPTION="Key des 2. Datapoint-Werts"
+					DESCRIPTION_DE="Key des 2. Datapoint-Werts"
+					DESCRIPTION_EN="Key of the 2nd Datapoint value" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE2"
+					DEFAULTNAME="Wert 2" DEFAULTNAME_DE="Wert 2" DEFAULTNAME_EN="Value 2"
+					ACCESS="Read/Write" SAVE="1"
+					DESCRIPTION="Wert 2 als Rohtext, Bedeutung siehe VALUE2_KEY"
+					DESCRIPTION_DE="Wert 2 als Rohtext, Bedeutung siehe VALUE2_KEY"
+					DESCRIPTION_EN="Value 2 as raw text, see VALUE2_KEY for its meaning" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE3_KEY"
+					DEFAULTNAME="Wert 3: Schluessel" DEFAULTNAME_DE="Wert 3: Schluessel" DEFAULTNAME_EN="Value 3: key"
+					ACCESS="Read" SAVE="1"
+					DESCRIPTION="Key des 3. Datapoint-Werts"
+					DESCRIPTION_DE="Key des 3. Datapoint-Werts"
+					DESCRIPTION_EN="Key of the 3rd Datapoint value" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE3"
+					DEFAULTNAME="Wert 3" DEFAULTNAME_DE="Wert 3" DEFAULTNAME_EN="Value 3"
+					ACCESS="Read/Write" SAVE="1"
+					DESCRIPTION="Wert 3 als Rohtext, Bedeutung siehe VALUE3_KEY"
+					DESCRIPTION_DE="Wert 3 als Rohtext, Bedeutung siehe VALUE3_KEY"
+					DESCRIPTION_EN="Value 3 as raw text, see VALUE3_KEY for its meaning" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE4_KEY"
+					DEFAULTNAME="Wert 4: Schluessel" DEFAULTNAME_DE="Wert 4: Schluessel" DEFAULTNAME_EN="Value 4: key"
+					ACCESS="Read" SAVE="1"
+					DESCRIPTION="Key des 4. Datapoint-Werts"
+					DESCRIPTION_DE="Key des 4. Datapoint-Werts"
+					DESCRIPTION_EN="Key of the 4th Datapoint value" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE4"
+					DEFAULTNAME="Wert 4" DEFAULTNAME_DE="Wert 4" DEFAULTNAME_EN="Value 4"
+					ACCESS="Read/Write" SAVE="1"
+					DESCRIPTION="Wert 4 als Rohtext, Bedeutung siehe VALUE4_KEY"
+					DESCRIPTION_DE="Wert 4 als Rohtext, Bedeutung siehe VALUE4_KEY"
+					DESCRIPTION_EN="Value 4 as raw text, see VALUE4_KEY for its meaning" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE5_KEY"
+					DEFAULTNAME="Wert 5: Schluessel" DEFAULTNAME_DE="Wert 5: Schluessel" DEFAULTNAME_EN="Value 5: key"
+					ACCESS="Read" SAVE="1"
+					DESCRIPTION="Key des 5. Datapoint-Werts"
+					DESCRIPTION_DE="Key des 5. Datapoint-Werts"
+					DESCRIPTION_EN="Key of the 5th Datapoint value" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE5"
+					DEFAULTNAME="Wert 5" DEFAULTNAME_DE="Wert 5" DEFAULTNAME_EN="Value 5"
+					ACCESS="Read/Write" SAVE="1"
+					DESCRIPTION="Wert 5 als Rohtext, Bedeutung siehe VALUE5_KEY"
+					DESCRIPTION_DE="Wert 5 als Rohtext, Bedeutung siehe VALUE5_KEY"
+					DESCRIPTION_EN="Value 5 as raw text, see VALUE5_KEY for its meaning" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE6_KEY"
+					DEFAULTNAME="Wert 6: Schluessel" DEFAULTNAME_DE="Wert 6: Schluessel" DEFAULTNAME_EN="Value 6: key"
+					ACCESS="Read" SAVE="1"
+					DESCRIPTION="Key des 6. Datapoint-Werts"
+					DESCRIPTION_DE="Key des 6. Datapoint-Werts"
+					DESCRIPTION_EN="Key of the 6th Datapoint value" EXPORT="1"/>
+				<PVSTRING SCRIPTNAME="VALUE6"
+					DEFAULTNAME="Wert 6" DEFAULTNAME_DE="Wert 6" DEFAULTNAME_EN="Value 6"
+					ACCESS="Read/Write" SAVE="1"
+					DESCRIPTION="Wert 6 als Rohtext, Bedeutung siehe VALUE6_KEY"
+					DESCRIPTION_DE="Wert 6 als Rohtext, Bedeutung siehe VALUE6_KEY"
+					DESCRIPTION_EN="Value 6 as raw text, see VALUE6_KEY for its meaning" EXPORT="1"/>
+			</PVFOLDER>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="Scene" CREATIONTYPE="Multiple" USERTYPE="scene_t"
+			DEFAULTNAME="Scene" DEFAULTNAME_DE="Scene" DEFAULTNAME_EN="Scene">
+			<PVSTRING SCRIPTNAME="SCENE_ID"
+				DEFAULTNAME="Scene-ID" DEFAULTNAME_DE="Scene-ID" DEFAULTNAME_EN="Scene ID"
+				ACCESS="Read/Write" SAVE="1"
+				DESCRIPTION="ID der Szene laut Gateway (siehe STATUS.SCENES_JSON)"
+				DESCRIPTION_DE="ID der Szene laut Gateway (siehe STATUS.SCENES_JSON)"
+				DESCRIPTION_EN="Scene ID as reported by the gateway (see STATUS.SCENES_JSON)" EXPORT="1"/>
+			<PVSTRING SCRIPTNAME="SCENE_LABEL"
+				DEFAULTNAME="Bezeichnung" DEFAULTNAME_DE="Bezeichnung" DEFAULTNAME_EN="Label"
+				ACCESS="Read" SAVE="1"
+				DESCRIPTION="Vom Gateway gemeldete Bezeichnung der Szene. Wird zusaetzlich per E:SetFolderName in den Ordnernamen dieser Instanz uebernommen."
+				DESCRIPTION_DE="Vom Gateway gemeldete Bezeichnung der Szene. Wird zusaetzlich per E:SetFolderName in den Ordnernamen dieser Instanz uebernommen."
+				DESCRIPTION_EN="Label of the scene as reported by the gateway. Also written into this instance's folder name via E:SetFolderName." EXPORT="1"/>
+			<PVBINARY SCRIPTNAME="ACTIVATE"
+				UNIT0="-" UNIT1="Aktivieren" UNIT0_DE="-" UNIT1_DE="Aktivieren" UNIT0_EN="-" UNIT1_EN="Activate"
+				DEFAULTNAME="Szene aktivieren" DEFAULTNAME_DE="Szene aktivieren" DEFAULTNAME_EN="Activate scene"
+				ACCESS="Write" SAVE="0"
+				DESCRIPTION="Auf 1 setzen um die Szene am Gateway zu aktivieren"
+				DESCRIPTION_DE="Auf 1 setzen um die Szene am Gateway zu aktivieren"
+				DESCRIPTION_EN="Set to 1 to activate the scene on the gateway" EXPORT="1"/>
+			<PVBINARY SCRIPTNAME="SCENE_VALID"
+				UNIT0="unbekannt" UNIT1="gefunden" UNIT0_DE="unbekannt" UNIT1_DE="gefunden" UNIT0_EN="unknown" UNIT1_EN="found"
+				DEFAULTNAME="Gefunden" DEFAULTNAME_DE="Gefunden" DEFAULTNAME_EN="Found"
+				ACCESS="Read" SAVE="0"
+				DESCRIPTION="1 wenn die Szene beim letzten Abgleich am Gateway gefunden wurde"
+				DESCRIPTION_DE="1 wenn die Szene beim letzten Abgleich am Gateway gefunden wurde"
+				DESCRIPTION_EN="1 if the scene was found on the gateway during the last sync" EXPORT="1"/>
+		</PVFOLDER>
+	</PVITEMS>
+
+	<RESOURCES>
+		<HTTP SCRIPTNAME="HTTP" USERTYPE="http_rq"
+			DEFAULTNAME="HTTP Requester" DEFAULTNAME_DE="HTTP Requester" DEFAULTNAME_EN="HTTP Requester"/>
+		<HTTPSERVER SCRIPTNAME="HTTPBRIDGE" USERTYPE="server"
+			DEFAULTNAME="JUNGHOME Bridge Port" DEFAULTNAME_DE="JUNGHOME Bridge Port" DEFAULTNAME_EN="JUNGHOME bridge port"
+			LOCALPORT="8151" USESSL="0" CERTFILE="" USEBEARERTOKEN="0" BEARERTOKEN=""/>
+	</RESOURCES>
+</SDVINTERFACE>
