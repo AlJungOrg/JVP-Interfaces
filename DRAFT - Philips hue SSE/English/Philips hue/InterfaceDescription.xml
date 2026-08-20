@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SDVINTERFACE VERSION="1">
+	<INFO NAME="PhilipsHueV2"
+		NAME_DE="Philips Hue V2" NAME_EN="Philips Hue V2"
+		AUTHOR="Albrecht"
+		DESCRIPTION="Philips Hue Bridge Anschluss (CLIP v2 API): Lampen, Räume/Zonen, Szenen, Sensoren und Automationen, Zustände in Echtzeit über Server-Sent Events (Eventstream)"
+		DESCRIPTION_DE="Philips Hue Bridge Anschluss über die CLIP v2 API: Lampen, Räume/Zonen, Szenen, Sensoren und Automationen. Zustandsänderungen kommen in Echtzeit per Server-Sent-Events (Eventstream) von der Bridge, kein Dauerpolling nötig."
+		DESCRIPTION_EN="Philips Hue Bridge connection using the CLIP v2 API: lights, rooms/zones, scenes, sensors and automations. State changes arrive in real time via Server-Sent Events (eventstream) from the bridge, no continuous polling required."
+		HELPFILE_DE="InterfaceHelp_DE.pdf" HELPFILE_EN="InterfaceHelp_EN.pdf"
+		VERSION="1" APIVERSION="5" POLLTIME="200"/>
+	<PVITEMS>
+		<PVFOLDER SCRIPTNAME="CONFIGURATION" CREATIONTYPE="Unique" USERTYPE="configuration_t"
+			DEFAULTNAME="Configuration" DEFAULTNAME_DE="Konfiguration" DEFAULTNAME_EN="Configuration">
+			<PVSTRING SCRIPTNAME="BRIDGE_IP" ACCESS="Read/Write" SAVE="1" EXPORT="1"
+				DEFAULTNAME="Bridge IP" DEFAULTNAME_DE="Bridge IP-Adresse" DEFAULTNAME_EN="Bridge IP address"
+				DESCRIPTION="IP address of the Hue bridge on the local network, e.g. 192.168.1.20"
+				DESCRIPTION_DE="IP-Adresse der Hue Bridge im lokalen Netzwerk, z.B. 192.168.1.20"
+				DESCRIPTION_EN="IP address of the Hue bridge on the local network, e.g. 192.168.1.20"/>
+			<PVBINARY SCRIPTNAME="AUTO_DISCOVER_IP" ACCESS="Read/Write" SAVE="1" EXPORT="1"
+				UNIT0="off" UNIT1="on" UNIT0_DE="aus" UNIT1_DE="ein" UNIT0_EN="off" UNIT1_EN="on"
+				DEFAULTNAME="Auto-update bridge IP" DEFAULTNAME_DE="Bridge-IP automatisch aktualisieren" DEFAULTNAME_EN="Auto-update bridge IP"
+				DESCRIPTION="On connection loss, the current bridge IP is looked up via discovery.meethue.com (Philips cloud service) and taken over if it changed. Requires internet access - leave off without internet access and maintain the IP manually or via a DHCP reservation in the router"
+				DESCRIPTION_DE="Bei Verbindungsverlust wird die aktuelle Bridge-IP automatisch über discovery.meethue.com (Cloud-Dienst von Philips) ermittelt und übernommen, falls sie sich geändert hat. Erfordert Internetzugang - ohne Internetzugang ausgeschaltet lassen und die IP manuell pflegen bzw. per DHCP-Reservierung im Router fixieren"
+				DESCRIPTION_EN="On connection loss, the current bridge IP is looked up via discovery.meethue.com (Philips cloud service) and taken over if it changed. Requires internet access - leave off without internet access and maintain the IP manually or via a DHCP reservation in the router"/>
+			<PVBINARY SCRIPTNAME="PAIR_REQUEST" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="-" UNIT1="Start" UNIT0_DE="-" UNIT1_DE="Start" UNIT0_EN="-" UNIT1_EN="Start"
+				DEFAULTNAME="Start pairing" DEFAULTNAME_DE="Pairing starten" DEFAULTNAME_EN="Start pairing"
+				DESCRIPTION="Write 1, then press the link button on the bridge within 5 minutes"
+				DESCRIPTION_DE="1 schreiben, danach innerhalb von 5 Minuten den Link-Button auf der Bridge drücken"
+				DESCRIPTION_EN="Write 1, then press the link button on the bridge within 5 minutes"/>
+			<PVSTRING SCRIPTNAME="API_KEY" ACCESS="Read/Write" SAVE="1" EXPORT="1"
+				DEFAULTNAME="API key (username)" DEFAULTNAME_DE="API-Key (Username)" DEFAULTNAME_EN="API key (username)"
+				DESCRIPTION="Hue application key (also used as the 'hue-application-key' header for CLIP v2). Set automatically by pairing, can also be entered manually"
+				DESCRIPTION_DE="Hue Application Key (wird auch als 'hue-application-key'-Header für CLIP v2 verwendet). Wird beim Pairing automatisch gesetzt, kann alternativ manuell eingetragen werden"
+				DESCRIPTION_EN="Hue application key (also used as the 'hue-application-key' header for CLIP v2). Set automatically by pairing, can also be entered manually"/>
+			<PVBINARY SCRIPTNAME="DUMP_INVENTORY" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="-" UNIT1="Start" UNIT0_DE="-" UNIT1_DE="Start" UNIT0_EN="-" UNIT1_EN="Start"
+				DEFAULTNAME="List inventory" DEFAULTNAME_DE="Inventar auflisten" DEFAULTNAME_EN="List inventory"
+				DESCRIPTION="Write 1: fetches all lights/rooms&amp;zones/scenes/sensors/automations from the bridge in one request and lists them with their v2 resource ID under STATUS.Inventory"
+				DESCRIPTION_DE="1 schreiben: fragt alle Lampen/Räume&amp;Zonen/Szenen/Sensoren/Automationen der Bridge in einer Anfrage ab und listet sie mit v2-Ressourcen-ID in STATUS.Inventar auf"
+				DESCRIPTION_EN="Write 1: fetches all lights/rooms&amp;zones/scenes/sensors/automations from the bridge in one request and lists them with their v2 resource ID under STATUS.Inventory"/>
+			<PVBINARY SCRIPTNAME="ASSIGN_IDS" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="-" UNIT1="Start" UNIT0_DE="-" UNIT1_DE="Start" UNIT0_EN="-" UNIT1_EN="Start"
+				DEFAULTNAME="Auto-assign IDs" DEFAULTNAME_DE="IDs automatisch zuordnen" DEFAULTNAME_EN="Auto-assign IDs"
+				DESCRIPTION="Write 1: assigns the resource IDs found on the bridge to the instances already created in the editor (lights/rooms&amp;zones/scenes/sensors/automations) in order - instance 1 gets the first found ID, instance 2 the second, etc. Only empty ID fields are filled, existing assignments are kept"
+				DESCRIPTION_DE="1 schreiben: ordnet den bereits im Editor angelegten Instanzen (Lichter/Räume&amp;Zonen/Szenen/Sensoren/Automationen) der Reihe nach die auf der Bridge gefundenen IDs zu - Instanz 1 erhält die erste gefundene ID, Instanz 2 die zweite usw. Nur leere ID-Felder werden befüllt, vorhandene Zuordnungen bleiben erhalten"
+				DESCRIPTION_EN="Write 1: assigns the resource IDs found on the bridge to the instances already created in the editor (lights/rooms&amp;zones/scenes/sensors/automations) in order - instance 1 gets the first found ID, instance 2 the second, etc. Only empty ID fields are filled, existing assignments are kept"/>
+			<PVBINARY SCRIPTNAME="REFRESH_STATES" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="-" UNIT1="Start" UNIT0_DE="-" UNIT1_DE="Start" UNIT0_EN="-" UNIT1_EN="Start"
+				DEFAULTNAME="Refresh states" DEFAULTNAME_DE="Status aktualisieren" DEFAULTNAME_EN="Refresh states"
+				DESCRIPTION="Write 1: fetches the full state of all configured instances from the bridge again in one request and also re-syncs their folder names. Normally not needed - the eventstream already keeps everything up to date in real time; useful after adding new instances or if the connection was down for a while"
+				DESCRIPTION_DE="1 schreiben: fragt den vollständigen Zustand aller konfigurierten Instanzen erneut in einer Anfrage von der Bridge ab und gleicht zusätzlich die Ordnernamen ab. Normalerweise nicht nötig - der Eventstream hält alles bereits laufend aktuell; hilfreich nach dem Anlegen neuer Instanzen oder wenn die Verbindung länger gestanden hat"
+				DESCRIPTION_EN="Write 1: fetches the full state of all configured instances from the bridge again in one request and also re-syncs their folder names. Normally not needed - the eventstream already keeps everything up to date in real time; useful after adding new instances or if the connection was down for a while"/>
+			<PVBINARY SCRIPTNAME="GEOFENCE_ENABLED" ACCESS="Read/Write" SAVE="1" EXPORT="1"
+				UNIT0="off" UNIT1="on" UNIT0_DE="aus" UNIT1_DE="ein" UNIT0_EN="off" UNIT1_EN="on"
+				DEFAULTNAME="Query presence (geofencing)" DEFAULTNAME_DE="Anwesenheit (Geofencing) abfragen" DEFAULTNAME_EN="Query presence (geofencing)"
+				DESCRIPTION="Evaluates the home/away state of phones registered with the Hue app (CLIP v2 geofence_client resource)"
+				DESCRIPTION_DE="Wertet den Home/Away-Status der in der Hue-App registrierten Telefone aus (CLIP v2 geofence_client-Ressource)"
+				DESCRIPTION_EN="Evaluates the home/away state of phones registered with the Hue app (CLIP v2 geofence_client resource)"/>
+			<PVBINARY SCRIPTNAME="CLEAR_DEBUG_LOG" ACCESS="Write" SAVE="0" EXPORT="1"
+				UNIT0="-" UNIT1="Start" UNIT0_DE="-" UNIT1_DE="Start" UNIT0_EN="-" UNIT1_EN="Start"
+				DEFAULTNAME="Clear debug log" DEFAULTNAME_DE="Debug-Log löschen" DEFAULTNAME_EN="Clear debug log"
+				DESCRIPTION="Write 1 to reset the debug log"
+				DESCRIPTION_DE="1 schreiben, um das Debug-Log zurückzusetzen"
+				DESCRIPTION_EN="Write 1 to reset the debug log"/>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="STATUS" CREATIONTYPE="Unique" USERTYPE="status_t"
+			DEFAULTNAME="Status" DEFAULTNAME_DE="Status" DEFAULTNAME_EN="Status">
+			<PVSTRING SCRIPTNAME="PAIRING_STATE" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Pairing state" DEFAULTNAME_DE="Pairing-Status" DEFAULTNAME_EN="Pairing state"
+				DESCRIPTION="Text status of the pairing process" DESCRIPTION_DE="Textstatus des Kopplungsvorgangs" DESCRIPTION_EN="Text status of the pairing process"/>
+			<PVBINARY SCRIPTNAME="CONNECTED" ACCESS="Read" SAVE="0" EXPORT="1"
+				UNIT0="disconnected" UNIT1="connected" UNIT0_DE="getrennt" UNIT1_DE="verbunden" UNIT0_EN="disconnected" UNIT1_EN="connected"
+				DEFAULTNAME="Connection" DEFAULTNAME_DE="Verbindung" DEFAULTNAME_EN="Connection"
+				DESCRIPTION="Eventstream currently receiving data from the bridge" DESCRIPTION_DE="Eventstream empfängt aktuell Daten von der Bridge" DESCRIPTION_EN="Eventstream currently receiving data from the bridge"/>
+			<PVSTRING SCRIPTNAME="INVENTORY_LIGHTS" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Inventory lights" DEFAULTNAME_DE="Inventar Lampen" DEFAULTNAME_EN="Inventory lights"
+				DESCRIPTION="List of all lights (v2 ID + name), created by CONFIGURATION.List inventory" DESCRIPTION_DE="Liste aller Lampen (v2-ID + Name), erzeugt durch CONFIGURATION.Inventar auflisten" DESCRIPTION_EN="List of all lights (v2 ID + name), created by CONFIGURATION.List inventory"/>
+			<PVSTRING SCRIPTNAME="INVENTORY_GROUPS" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Inventory rooms/zones" DEFAULTNAME_DE="Inventar Räume/Zonen" DEFAULTNAME_EN="Inventory rooms/zones"
+				DESCRIPTION="List of all rooms and zones (v2 ID + name), created by CONFIGURATION.List inventory" DESCRIPTION_DE="Liste aller Räume und Zonen (v2-ID + Name), erzeugt durch CONFIGURATION.Inventar auflisten" DESCRIPTION_EN="List of all rooms and zones (v2 ID + name), created by CONFIGURATION.List inventory"/>
+			<PVSTRING SCRIPTNAME="INVENTORY_SCENES" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Inventory scenes" DEFAULTNAME_DE="Inventar Szenen" DEFAULTNAME_EN="Inventory scenes"
+				DESCRIPTION="List of all scenes (v2 ID + name + room/zone), created by CONFIGURATION.List inventory" DESCRIPTION_DE="Liste aller Szenen (v2-ID + Name + Raum/Zone), erzeugt durch CONFIGURATION.Inventar auflisten" DESCRIPTION_EN="List of all scenes (v2 ID + name + room/zone), created by CONFIGURATION.List inventory"/>
+			<PVSTRING SCRIPTNAME="INVENTORY_SENSORS" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Inventory sensors" DEFAULTNAME_DE="Inventar Sensoren" DEFAULTNAME_EN="Inventory sensors"
+				DESCRIPTION="List of all sensor services (v2 ID + device name + type), created by CONFIGURATION.List inventory" DESCRIPTION_DE="Liste aller Sensor-Services (v2-ID + Gerätename + Typ), erzeugt durch CONFIGURATION.Inventar auflisten" DESCRIPTION_EN="List of all sensor services (v2 ID + device name + type), created by CONFIGURATION.List inventory"/>
+			<PVSTRING SCRIPTNAME="INVENTORY_AUTOMATIONS" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Inventory automations" DEFAULTNAME_DE="Inventar Automationen" DEFAULTNAME_EN="Inventory automations"
+				DESCRIPTION="List of all automations/behavior scripts (v2 ID + name), created by CONFIGURATION.List inventory" DESCRIPTION_DE="Liste aller Automationen (v2-ID + Name), erzeugt durch CONFIGURATION.Inventar auflisten" DESCRIPTION_EN="List of all automations/behavior scripts (v2 ID + name), created by CONFIGURATION.List inventory"/>
+			<PVTIME SCRIPTNAME="LAST_UPDATE" UNIT0="" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Last full sync" DEFAULTNAME_DE="Letzte Vollsynchronisation" DEFAULTNAME_EN="Last full sync"/>
+			<PVTIME SCRIPTNAME="LAST_EVENT" UNIT0="" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Last event" DEFAULTNAME_DE="Letztes Event" DEFAULTNAME_EN="Last event"
+				DESCRIPTION="Time the last server-sent event was received from the bridge" DESCRIPTION_DE="Zeitpunkt des letzten über den Eventstream empfangenen Ereignisses" DESCRIPTION_EN="Time the last server-sent event was received from the bridge"/>
+			<PVBINARY SCRIPTNAME="ANY_PRESENT" ACCESS="Read" SAVE="0" EXPORT="1"
+				UNIT0="nobody home" UNIT1="someone home" UNIT0_DE="niemand zuhause" UNIT1_DE="jemand zuhause" UNIT0_EN="nobody home" UNIT1_EN="someone home"
+				DEFAULTNAME="Presence" DEFAULTNAME_DE="Anwesenheit" DEFAULTNAME_EN="Presence"
+				DESCRIPTION="At least one phone registered with the Hue app reports 'home' (only with geofencing enabled)" DESCRIPTION_DE="Mind. ein in der Hue-App registriertes Gerät meldet 'zuhause' (nur bei aktivem Geofencing)" DESCRIPTION_EN="At least one phone registered with the Hue app reports 'home' (only with geofencing enabled)"/>
+			<PVSTRING SCRIPTNAME="LAST_ERROR" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Last error" DEFAULTNAME_DE="Letzter Fehler" DEFAULTNAME_EN="Last error"/>
+			<PVSTRING SCRIPTNAME="DEBUG_LOG" ACCESS="Read" SAVE="0" EXPORT="1"
+				DEFAULTNAME="Debug log" DEFAULTNAME_DE="Debug-Log" DEFAULTNAME_EN="Debug log"
+				DESCRIPTION="Rolling log of the last E:trace messages, for copying when troubleshooting" DESCRIPTION_DE="Rollierendes Log der letzten E:trace-Meldungen zum Kopieren bei der Fehlersuche" DESCRIPTION_EN="Rolling log of the last E:trace messages, for copying when troubleshooting"/>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="LIGHTS_ROOT" CREATIONTYPE="Unique" USERTYPE="lights_root_t"
+			DEFAULTNAME="Lights" DEFAULTNAME_DE="Lichter" DEFAULTNAME_EN="Lights">
+			<PVFOLDER SCRIPTNAME="Light" CREATIONTYPE="Multiple" USERTYPE="light_t"
+				DEFAULTNAME="Light" DEFAULTNAME_DE="Lampe" DEFAULTNAME_EN="Light">
+				<PVSTRING SCRIPTNAME="LIGHT_HUE_ID" ACCESS="Read/Write" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Hue light ID" DEFAULTNAME_DE="Hue Light-ID" DEFAULTNAME_EN="Hue light ID"
+					DESCRIPTION="v2 resource ID of the light on the bridge (see CONFIGURATION.List inventory)" DESCRIPTION_DE="v2-Ressourcen-ID der Lampe auf der Bridge (siehe CONFIGURATION.Inventar auflisten)" DESCRIPTION_EN="v2 resource ID of the light on the bridge (see CONFIGURATION.List inventory)"/>
+				<PVSTRING SCRIPTNAME="LIGHT_NAME" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Name" DEFAULTNAME_DE="Name" DEFAULTNAME_EN="Name"
+					DESCRIPTION="Also written into the folder's own name via E:SetFolderName" DESCRIPTION_DE="Wird zusätzlich per E:SetFolderName in den Ordnernamen selbst übernommen" DESCRIPTION_EN="Also written into the folder's own name via E:SetFolderName"/>
+				<PVBINARY SCRIPTNAME="LIGHT_ON_CMD" ACCESS="Write" SAVE="0" EXPORT="1"
+					UNIT0="off" UNIT1="on" UNIT0_DE="aus" UNIT1_DE="an" UNIT0_EN="off" UNIT1_EN="on"
+					DEFAULTNAME="On/Off" DEFAULTNAME_DE="Ein/Aus" DEFAULTNAME_EN="On/Off"
+					DESCRIPTION="Command point: switches the light" DESCRIPTION_DE="Sendedatenpunkt: schaltet die Lampe" DESCRIPTION_EN="Command point: switches the light"/>
+				<PVBINARY SCRIPTNAME="LIGHT_ON" ACCESS="Read" SAVE="1" EXPORT="1"
+					UNIT0="off" UNIT1="on" UNIT0_DE="aus" UNIT1_DE="an" UNIT0_EN="off" UNIT1_EN="on"
+					DEFAULTNAME="On/Off (feedback)" DEFAULTNAME_DE="Ein/Aus (Rückmeldung)" DEFAULTNAME_EN="On/Off (feedback)"
+					DESCRIPTION="Feedback point: current on/off state per the bridge" DESCRIPTION_DE="Empfangsdatenpunkt: aktueller Schaltzustand laut Bridge" DESCRIPTION_EN="Feedback point: current on/off state per the bridge"/>
+				<PVANALOG SCRIPTNAME="LIGHT_BRIGHTNESS_CMD" UNIT="[0..100]" ACCESS="Write" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Brightness %" DEFAULTNAME_DE="Helligkeit %" DEFAULTNAME_EN="Brightness %"
+					DESCRIPTION="Command point: sets the brightness" DESCRIPTION_DE="Sendedatenpunkt: setzt die Helligkeit" DESCRIPTION_EN="Command point: sets the brightness"/>
+				<PVANALOG SCRIPTNAME="LIGHT_BRIGHTNESS" UNIT="[0..100]" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Brightness % (feedback)" DEFAULTNAME_DE="Helligkeit % (Rückmeldung)" DEFAULTNAME_EN="Brightness % (feedback)"
+					DESCRIPTION="Feedback point: current brightness per the bridge" DESCRIPTION_DE="Empfangsdatenpunkt: aktuelle Helligkeit laut Bridge" DESCRIPTION_EN="Feedback point: current brightness per the bridge"/>
+				<PVANALOG SCRIPTNAME="LIGHT_COLORTEMP_CMD" UNIT="[2000..6500]" ACCESS="Write" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Color temperature K" DEFAULTNAME_DE="Farbtemperatur K" DEFAULTNAME_EN="Color temperature K"
+					DESCRIPTION="Command point: sets the color temperature in Kelvin (2000=warm white .. 6500=cool white)" DESCRIPTION_DE="Sendedatenpunkt: setzt die Farbtemperatur in Kelvin (2000=warmweiss .. 6500=kaltweiss)" DESCRIPTION_EN="Command point: sets the color temperature in Kelvin (2000=warm white .. 6500=cool white)"/>
+				<PVANALOG SCRIPTNAME="LIGHT_COLORTEMP" UNIT="[2000..6500]" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Color temperature K (feedback)" DEFAULTNAME_DE="Farbtemperatur K (Rückmeldung)" DEFAULTNAME_EN="Color temperature K (feedback)"
+					DESCRIPTION="Feedback point: current color temperature per the bridge" DESCRIPTION_DE="Empfangsdatenpunkt: aktuelle Farbtemperatur laut Bridge" DESCRIPTION_EN="Feedback point: current color temperature per the bridge"/>
+				<PVANALOG SCRIPTNAME="LIGHT_HUEANGLE_CMD" UNIT="[0..360]" ACCESS="Write" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Hue angle" DEFAULTNAME_DE="Farbton" DEFAULTNAME_EN="Hue angle"
+					DESCRIPTION="Command point: sets the hue in degrees (0..360), color lights only. Converted to the bridge's xy color space internally" DESCRIPTION_DE="Sendedatenpunkt: setzt den Farbton in Grad (0..360), nur bei Vollfarbenlampen. Wird intern in den xy-Farbraum der Bridge umgerechnet" DESCRIPTION_EN="Command point: sets the hue in degrees (0..360), color lights only. Converted to the bridge's xy color space internally"/>
+				<PVANALOG SCRIPTNAME="LIGHT_HUEANGLE" UNIT="[0..360]" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Hue angle (feedback)" DEFAULTNAME_DE="Farbton (Rückmeldung)" DEFAULTNAME_EN="Hue angle (feedback)"
+					DESCRIPTION="Feedback point: current hue per the bridge, converted back from xy" DESCRIPTION_DE="Empfangsdatenpunkt: aktueller Farbton laut Bridge, aus xy zurückgerechnet" DESCRIPTION_EN="Feedback point: current hue per the bridge, converted back from xy"/>
+				<PVANALOG SCRIPTNAME="LIGHT_SATURATION_CMD" UNIT="[0..100]" ACCESS="Write" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Saturation %" DEFAULTNAME_DE="Sättigung %" DEFAULTNAME_EN="Saturation %"
+					DESCRIPTION="Command point: sets the saturation, color lights only" DESCRIPTION_DE="Sendedatenpunkt: setzt die Sättigung, nur bei Vollfarbenlampen" DESCRIPTION_EN="Command point: sets the saturation, color lights only"/>
+				<PVANALOG SCRIPTNAME="LIGHT_SATURATION" UNIT="[0..100]" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Saturation % (feedback)" DEFAULTNAME_DE="Sättigung % (Rückmeldung)" DEFAULTNAME_EN="Saturation % (feedback)"
+					DESCRIPTION="Feedback point: current saturation per the bridge" DESCRIPTION_DE="Empfangsdatenpunkt: aktuelle Sättigung laut Bridge" DESCRIPTION_EN="Feedback point: current saturation per the bridge"/>
+				<PVBINARY SCRIPTNAME="LIGHT_REACHABLE" ACCESS="Read" SAVE="0" EXPORT="1"
+					UNIT0="not reachable" UNIT1="reachable" UNIT0_DE="nicht erreichbar" UNIT1_DE="erreichbar" UNIT0_EN="not reachable" UNIT1_EN="reachable"
+					DEFAULTNAME="Reachable" DEFAULTNAME_DE="Erreichbar" DEFAULTNAME_EN="Reachable"
+					DESCRIPTION="Zigbee connectivity of the owning device" DESCRIPTION_DE="Zigbee-Verbindungsstatus des zugehörigen Geräts" DESCRIPTION_EN="Zigbee connectivity of the owning device"/>
+				<PVTIME SCRIPTNAME="LIGHT_LASTUPDATE" UNIT0="" ACCESS="Read" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Last update" DEFAULTNAME_DE="Letztes Update" DEFAULTNAME_EN="Last update"/>
+			</PVFOLDER>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="GROUPS_ROOT" CREATIONTYPE="Unique" USERTYPE="groups_root_t"
+			DEFAULTNAME="Rooms/Zones" DEFAULTNAME_DE="Räume/Zonen" DEFAULTNAME_EN="Rooms/Zones">
+			<PVFOLDER SCRIPTNAME="Group" CREATIONTYPE="Multiple" USERTYPE="group_t"
+				DEFAULTNAME="Room/Zone" DEFAULTNAME_DE="Raum/Zone" DEFAULTNAME_EN="Room/Zone">
+				<PVSTRING SCRIPTNAME="GROUP_HUE_ID" ACCESS="Read/Write" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Hue room/zone ID" DEFAULTNAME_DE="Hue Raum/Zonen-ID" DEFAULTNAME_EN="Hue room/zone ID"
+					DESCRIPTION="v2 resource ID of the room or zone on the bridge (not the grouped_light service - it is resolved automatically)" DESCRIPTION_DE="v2-Ressourcen-ID des Raums bzw. der Zone auf der Bridge (nicht der grouped_light-Service - dieser wird automatisch aufgelöst)" DESCRIPTION_EN="v2 resource ID of the room or zone on the bridge (not the grouped_light service - it is resolved automatically)"/>
+				<PVSTRING SCRIPTNAME="GROUP_NAME" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Name" DEFAULTNAME_DE="Name" DEFAULTNAME_EN="Name"/>
+				<PVBINARY SCRIPTNAME="GROUP_ON_CMD" ACCESS="Write" SAVE="0" EXPORT="1"
+					UNIT0="off" UNIT1="on" UNIT0_DE="aus" UNIT1_DE="an" UNIT0_EN="off" UNIT1_EN="on"
+					DEFAULTNAME="On/Off" DEFAULTNAME_DE="Ein/Aus" DEFAULTNAME_EN="On/Off"
+					DESCRIPTION="Command point: switches the room/zone" DESCRIPTION_DE="Sendedatenpunkt: schaltet den Raum/die Zone" DESCRIPTION_EN="Command point: switches the room/zone"/>
+				<PVBINARY SCRIPTNAME="GROUP_ON" ACCESS="Read" SAVE="1" EXPORT="1"
+					UNIT0="off" UNIT1="on" UNIT0_DE="aus" UNIT1_DE="an" UNIT0_EN="off" UNIT1_EN="on"
+					DEFAULTNAME="On/Off (feedback)" DEFAULTNAME_DE="Ein/Aus (Rückmeldung)" DEFAULTNAME_EN="On/Off (feedback)"
+					DESCRIPTION="Feedback point: at least one light in the room/zone is on, per the bridge's grouped_light service" DESCRIPTION_DE="Empfangsdatenpunkt: mindestens eine Lampe im Raum/in der Zone ist an, laut grouped_light-Service der Bridge" DESCRIPTION_EN="Feedback point: at least one light in the room/zone is on, per the bridge's grouped_light service"/>
+				<PVANALOG SCRIPTNAME="GROUP_BRIGHTNESS_CMD" UNIT="[0..100]" ACCESS="Write" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Brightness %" DEFAULTNAME_DE="Helligkeit %" DEFAULTNAME_EN="Brightness %"
+					DESCRIPTION="Command point: sets the brightness of the room/zone" DESCRIPTION_DE="Sendedatenpunkt: setzt die Helligkeit des Raums/der Zone" DESCRIPTION_EN="Command point: sets the brightness of the room/zone"/>
+				<PVANALOG SCRIPTNAME="GROUP_BRIGHTNESS" UNIT="[0..100]" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Brightness % (feedback)" DEFAULTNAME_DE="Helligkeit % (Rückmeldung)" DEFAULTNAME_EN="Brightness % (feedback)"
+					DESCRIPTION="Feedback point: current brightness per the bridge" DESCRIPTION_DE="Empfangsdatenpunkt: aktuelle Helligkeit laut Bridge" DESCRIPTION_EN="Feedback point: current brightness per the bridge"/>
+				<PVSTRING SCRIPTNAME="GROUP_GROUPEDLIGHT_ID" ACCESS="Read" SAVE="1" EXPORT="0"
+					DEFAULTNAME="Grouped-light service ID (internal)" DEFAULTNAME_DE="Grouped-Light-Service-ID (intern)" DEFAULTNAME_EN="Grouped-light service ID (internal)"
+					DESCRIPTION="Internal: resolved automatically, not for use in the visualization" DESCRIPTION_DE="Intern: wird automatisch aufgelöst, nicht für die Visualisierung gedacht" DESCRIPTION_EN="Internal: resolved automatically, not for use in the visualization"/>
+			</PVFOLDER>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="SCENES_ROOT" CREATIONTYPE="Unique" USERTYPE="scenes_root_t"
+			DEFAULTNAME="Scenes" DEFAULTNAME_DE="Szenen" DEFAULTNAME_EN="Scenes">
+			<PVFOLDER SCRIPTNAME="Scene" CREATIONTYPE="Multiple" USERTYPE="scene_t"
+				DEFAULTNAME="Scene" DEFAULTNAME_DE="Szene" DEFAULTNAME_EN="Scene">
+				<PVSTRING SCRIPTNAME="SCENE_HUE_ID" ACCESS="Read/Write" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Hue scene ID" DEFAULTNAME_DE="Hue Scene-ID" DEFAULTNAME_EN="Hue scene ID"
+					DESCRIPTION="v2 resource ID of the scene on the bridge" DESCRIPTION_DE="v2-Ressourcen-ID der Szene auf der Bridge" DESCRIPTION_EN="v2 resource ID of the scene on the bridge"/>
+				<PVSTRING SCRIPTNAME="SCENE_NAME" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Name" DEFAULTNAME_DE="Name" DEFAULTNAME_EN="Name"/>
+				<PVSTRING SCRIPTNAME="SCENE_GROUP_NAME" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Room/Zone" DEFAULTNAME_DE="Raum/Zone" DEFAULTNAME_EN="Room/Zone"
+					DESCRIPTION="Name of the room/zone the scene belongs to, resolved from the bridge - to tell apart identically named scenes in different rooms" DESCRIPTION_DE="Name des Raums/der Zone, zu der die Szene gehört, von der Bridge aufgelöst - zur Unterscheidung gleichnamiger Szenen in verschiedenen Räumen" DESCRIPTION_EN="Name of the room/zone the scene belongs to, resolved from the bridge - to tell apart identically named scenes in different rooms"/>
+				<PVBINARY SCRIPTNAME="SCENE_ACTIVATE" ACCESS="Write" SAVE="0" EXPORT="1"
+					UNIT0="-" UNIT1="Start" UNIT0_DE="-" UNIT1_DE="Start" UNIT0_EN="-" UNIT1_EN="Start"
+					DEFAULTNAME="Activate" DEFAULTNAME_DE="Aktivieren" DEFAULTNAME_EN="Activate"/>
+			</PVFOLDER>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="SENSORS_ROOT" CREATIONTYPE="Unique" USERTYPE="sensors_root_t"
+			DEFAULTNAME="Sensors" DEFAULTNAME_DE="Sensoren" DEFAULTNAME_EN="Sensors">
+			<PVFOLDER SCRIPTNAME="Sensor" CREATIONTYPE="Multiple" USERTYPE="sensor_t"
+				DEFAULTNAME="Sensor" DEFAULTNAME_DE="Sensor" DEFAULTNAME_EN="Sensor">
+				<PVSTRING SCRIPTNAME="SENSOR_HUE_ID" ACCESS="Read/Write" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Hue sensor ID" DEFAULTNAME_DE="Hue Sensor-ID" DEFAULTNAME_EN="Hue sensor ID"
+					DESCRIPTION="v2 resource ID of the sensor service (motion/temperature/light_level/contact/button) on the bridge" DESCRIPTION_DE="v2-Ressourcen-ID des Sensor-Services (motion/temperature/light_level/contact/button) auf der Bridge" DESCRIPTION_EN="v2 resource ID of the sensor service (motion/temperature/light_level/contact/button) on the bridge"/>
+				<PVSTRING SCRIPTNAME="SENSOR_NAME" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Name" DEFAULTNAME_DE="Name" DEFAULTNAME_EN="Name"
+					DESCRIPTION="Name of the owning device (sensor services have no name of their own in the v2 API)" DESCRIPTION_DE="Name des zugehörigen Geräts (Sensor-Services selbst haben in der v2-API keinen eigenen Namen)" DESCRIPTION_EN="Name of the owning device (sensor services have no name of their own in the v2 API)"/>
+				<PVSTRING SCRIPTNAME="SENSOR_TYPE" ACCESS="Read" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Type" DEFAULTNAME_DE="Typ" DEFAULTNAME_EN="Type"
+					DESCRIPTION="v2 resource type: motion, temperature, light_level, contact or button" DESCRIPTION_DE="v2-Ressourcentyp: motion, temperature, light_level, contact oder button" DESCRIPTION_EN="v2 resource type: motion, temperature, light_level, contact or button"/>
+				<PVSTRING SCRIPTNAME="SENSOR_VALUE" ACCESS="Read" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Value (text)" DEFAULTNAME_DE="Wert (Text)" DEFAULTNAME_EN="Value (text)"/>
+				<PVANALOG SCRIPTNAME="SENSOR_NUMERICVALUE" UNIT="[-1000..100000]" ACCESS="Read" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Value (numeric)" DEFAULTNAME_DE="Wert (numerisch)" DEFAULTNAME_EN="Value (numeric)"
+					DESCRIPTION="Temperature in °C, lux, motion/contact 0/1 or button event, depending on type" DESCRIPTION_DE="Temperatur in °C, Lux, Bewegung/Kontakt 0/1 oder Button-Event, je nach Typ" DESCRIPTION_EN="Temperature in °C, lux, motion/contact 0/1 or button event, depending on type"/>
+				<PVBINARY SCRIPTNAME="SENSOR_CONTACT" ACCESS="Read" SAVE="0" EXPORT="1"
+					UNIT0="closed" UNIT1="open" UNIT0_DE="geschlossen" UNIT1_DE="offen" UNIT0_EN="closed" UNIT1_EN="open"
+					DEFAULTNAME="Contact (window/door)" DEFAULTNAME_DE="Kontakt (Fenster/Tür)" DEFAULTNAME_EN="Contact (window/door)"
+					DESCRIPTION="Only set for contact sensors (type 'contact'): 1=open, 0=closed" DESCRIPTION_DE="Nur bei Fensterkontakten gesetzt (Typ 'contact'): 1=offen, 0=geschlossen" DESCRIPTION_EN="Only set for contact sensors (type 'contact'): 1=open, 0=closed"/>
+				<PVANALOG SCRIPTNAME="SENSOR_BATTERY" UNIT="[0..100]" ACCESS="Read" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Battery %" DEFAULTNAME_DE="Batterie %" DEFAULTNAME_EN="Battery %"
+					DESCRIPTION="Battery level of the owning device (device_power resource)" DESCRIPTION_DE="Batteriestand des zugehörigen Geräts (device_power-Ressource)" DESCRIPTION_EN="Battery level of the owning device (device_power resource)"/>
+				<PVTIME SCRIPTNAME="SENSOR_LASTUPDATED" UNIT0="" ACCESS="Read" SAVE="0" EXPORT="1"
+					DEFAULTNAME="Last update" DEFAULTNAME_DE="Letztes Update" DEFAULTNAME_EN="Last update"/>
+			</PVFOLDER>
+		</PVFOLDER>
+
+		<PVFOLDER SCRIPTNAME="AUTOMATIONS_ROOT" CREATIONTYPE="Unique" USERTYPE="automations_root_t"
+			DEFAULTNAME="Automations" DEFAULTNAME_DE="Automationen" DEFAULTNAME_EN="Automations">
+			<PVFOLDER SCRIPTNAME="Automation" CREATIONTYPE="Multiple" USERTYPE="automation_t"
+				DEFAULTNAME="Automation" DEFAULTNAME_DE="Automation" DEFAULTNAME_EN="Automation">
+				<PVSTRING SCRIPTNAME="AUTOMATION_HUE_ID" ACCESS="Read/Write" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Hue automation ID" DEFAULTNAME_DE="Hue Automation-ID" DEFAULTNAME_EN="Hue automation ID"
+					DESCRIPTION="v2 resource ID of the behavior_instance (automation) on the bridge" DESCRIPTION_DE="v2-Ressourcen-ID der behavior_instance (Automation) auf der Bridge" DESCRIPTION_EN="v2 resource ID of the behavior_instance (automation) on the bridge"/>
+				<PVSTRING SCRIPTNAME="AUTOMATION_NAME" ACCESS="Read" SAVE="1" EXPORT="1"
+					DEFAULTNAME="Name" DEFAULTNAME_DE="Name" DEFAULTNAME_EN="Name"/>
+				<PVBINARY SCRIPTNAME="AUTOMATION_ENABLED_CMD" ACCESS="Write" SAVE="0" EXPORT="1"
+					UNIT0="disabled" UNIT1="enabled" UNIT0_DE="deaktiviert" UNIT1_DE="aktiviert" UNIT0_EN="disabled" UNIT1_EN="enabled"
+					DEFAULTNAME="Active" DEFAULTNAME_DE="Aktiv" DEFAULTNAME_EN="Active"
+					DESCRIPTION="Command point: enables/disables the automation" DESCRIPTION_DE="Sendedatenpunkt: aktiviert/deaktiviert die Automation" DESCRIPTION_EN="Command point: enables/disables the automation"/>
+				<PVBINARY SCRIPTNAME="AUTOMATION_ENABLED" ACCESS="Read" SAVE="1" EXPORT="1"
+					UNIT0="disabled" UNIT1="enabled" UNIT0_DE="deaktiviert" UNIT1_DE="aktiviert" UNIT0_EN="disabled" UNIT1_EN="enabled"
+					DEFAULTNAME="Active (feedback)" DEFAULTNAME_DE="Aktiv (Rückmeldung)" DEFAULTNAME_EN="Active (feedback)"
+					DESCRIPTION="Feedback point: current state per the bridge" DESCRIPTION_DE="Empfangsdatenpunkt: aktueller Zustand laut Bridge" DESCRIPTION_EN="Feedback point: current state per the bridge"/>
+			</PVFOLDER>
+		</PVFOLDER>
+	</PVITEMS>
+
+	<RESOURCES>
+		<HTTP SCRIPTNAME="HTTP" USERTYPE="http_rq" DEFAULTNAME="HTTP Requester" DEFAULTNAME_DE="HTTP Requester" DEFAULTNAME_EN="HTTP Requester"/>
+		<HTTP SCRIPTNAME="HTTP_EVENTS" USERTYPE="http_events_rq"
+			DEFAULTNAME="HTTP Eventstream" DEFAULTNAME_DE="HTTP Eventstream" DEFAULTNAME_EN="HTTP Eventstream"/>
+	</RESOURCES>
+</SDVINTERFACE>
