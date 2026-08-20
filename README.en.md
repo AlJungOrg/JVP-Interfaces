@@ -57,6 +57,37 @@ The helper functions `oVarPath:_findParentFromUserType("...")` (containing folde
 | `TCPCLIENT` | Internal TCP client |
 | `HTTP` | HTTP requests (GET/POST/PUT/DELETE) |
 
+### Datapoints in `InterfaceDescription.xml`
+
+Rough file structure: `<SDVINTERFACE>` → `<INFO>` (name, author, description, version, `APIVERSION`, `POLLTIME` in ms) → `<PVITEMS>` holding the actual datapoints.
+
+| Element | Type |
+|---|---|
+| `PVANALOG` | Analog value |
+| `PVBINARY` | Binary value (`UNIT0`/`UNIT1` = labels for 0/1) |
+| `PVSTRING` | Text |
+| `PVTIME` | Date/time |
+| `PVFOLDER` | Folder, can contain further datapoints/folders |
+
+Common attributes: `SCRIPTNAME` (name used in the Lua script), `DEFAULTNAME` (name shown in the editor), `EXPORT` (whether it's passed to the visualization), `SAVE` (whether the value is persisted when the editor closes), `ACCESS` (`None`/`Read`/`Write`/`Read/Write`), `DESCRIPTION`.
+
+For `PVFOLDER`, `CREATIONTYPE` additionally controls whether the folder can be created (repeatedly) by the user (`Multiple`) or is created once by the editor (`Unique`); `USERTYPE` is a freely chosen identifier the script can use to find matching folders.
+
+### Accessing datapoints from Lua
+
+- `E.PVTable` — global table containing all datapoints/folders defined in the XML; access `Unique` folders directly via `E.PVTable["<SCRIPTNAME>"]`, iterate `Multiple` folders and check `E_UserType`.
+- `E.ResourceTable["<SCRIPTNAME>"]` — access a resource declared under `RESOURCES` (e.g. `HTTP_RQ = E.ResourceTable["HTTP"]`).
+- Inside `OnValueChange`/`OnValueRead`, `oVarPath:_findParentFromUserType("...")` returns the containing folder ("Parent") and `oVarPath:_getLeaf()` returns the datapoint itself ("Leaf").
+- `varLeaf:GetAccessRights()` returns `constAccessNone` / `constAccessRead` / `constAccessWrite` / `constAccessReadWrite` — check before reading/writing.
+- `varLeaf:GetValue()` reads the current value (always as text), `varLeaf:SetValue(strValue, nReason)` writes it; `nReason` is typically `constValueChange` (also used to acknowledge a value back to the process model) or `constValueResponse`.
+
+### Developing & testing
+
+- The easiest way to create a new interface is to copy an existing folder and adapt the XML/Lua; after renaming it in the XML, the interface only appears under "File / Create process interface" after **restarting the device editor**.
+- Notepad++ (with Lua syntax highlighting) works well for editing the `.lua` files.
+- After making changes: save the file, then restart the interface via right-click in the device editor. The **message window** shows Lua errors (e.g. syntax mistakes) with line numbers.
+- For HTTP interfaces, helper functions are available: `ConvertASCIIToUTF8`, `ConvertUTF8ToASCII`, `ConvertToURLEncoding` (percent-encoding for URLs).
+
 ## Available interfaces
 
 *(continuously updated)*

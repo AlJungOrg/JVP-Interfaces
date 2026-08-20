@@ -57,6 +57,37 @@ In `InterfaceDescription.xml` können folgende Ressourcen eingebunden werden, je
 | `TCPCLIENT` | interner TCP-Client |
 | `HTTP` | HTTP-Requests (GET/POST/PUT/DELETE) |
 
+### Datenpunkte in `InterfaceDescription.xml`
+
+Grobe Struktur der Datei: `<SDVINTERFACE>` → `<INFO>` (Name, Autor, Beschreibung, Version, `APIVERSION`, `POLLTIME` in ms) → `<PVITEMS>` mit den eigentlichen Datenpunkten.
+
+| Element | Typ |
+|---|---|
+| `PVANALOG` | Analogwert |
+| `PVBINARY` | Binärwert (`UNIT0`/`UNIT1` = Beschriftung für 0/1) |
+| `PVSTRING` | Text |
+| `PVTIME` | Zeit/Datum |
+| `PVFOLDER` | Ordner, kann weitere Datenpunkte/Ordner enthalten |
+
+Gemeinsame Attribute: `SCRIPTNAME` (Name im Lua-Skript), `DEFAULTNAME` (im Editor sichtbarer Name), `EXPORT` (an die Visualisierung übergeben ja/nein), `SAVE` (Wert beim Schließen speichern ja/nein), `ACCESS` (`None`/`Read`/`Write`/`Read/Write`), `DESCRIPTION`.
+
+Bei `PVFOLDER` steuert `CREATIONTYPE` zusätzlich, ob der Ordner vom Anwender (mehrfach) angelegt werden kann (`Multiple`) oder vom Editor einmalig fest vorgegeben ist (`Unique`); `USERTYPE` ist ein frei wählbarer Bezeichner, über den das Skript passende Ordner wiederfindet.
+
+### Datenpunkte in Lua ansprechen
+
+- `E.PVTable` — globale Tabelle mit allen in der XML definierten Datenpunkten/Ordnern; `Unique`-Ordner direkt per `E.PVTable["<SCRIPTNAME>"]`, `Multiple`-Ordner per Iteration und Prüfung von `E_UserType`.
+- `E.ResourceTable["<SCRIPTNAME>"]` — Zugriff auf eine in `RESOURCES` definierte Ressource (z. B. `HTTP_RQ = E.ResourceTable["HTTP"]`).
+- In `OnValueChange`/`OnValueRead` liefert `oVarPath:_findParentFromUserType("...")` den übergeordneten Ordner ("Parent") und `oVarPath:_getLeaf()` den betroffenen Datenpunkt selbst ("Leaf").
+- `varLeaf:GetAccessRights()` liefert `constAccessNone` / `constAccessRead` / `constAccessWrite` / `constAccessReadWrite` — vor Schreib-/Lesezugriffen prüfen.
+- `varLeaf:GetValue()` liest den aktuellen Wert (immer als Text), `varLeaf:SetValue(strValue, nReason)` schreibt ihn; `nReason` ist üblicherweise `constValueChange` (auch für Bestätigungen an das Prozessmodell) oder `constValueResponse`.
+
+### Entwickeln & Testen
+
+- Neue Interfaces am einfachsten durch Kopieren eines bestehenden Ordners erstellen und XML/Lua anpassen; nach Namensänderung in der XML erscheint das Interface erst nach einem **Neustart des Geräteeditors** in „Datei / Prozessanschluss erstellen“.
+- Zum Bearbeiten der `.lua`-Dateien eignet sich z. B. Notepad++ (Syntax-Highlighting).
+- Nach Änderungen: Datei speichern, Interface im Geräteeditor per Rechtsklick neu starten. Das **Meldungsfenster** zeigt Lua-Fehler (z. B. Syntaxfehler) mit Zeilennummer an.
+- Für HTTP-Interfaces stehen Hilfsfunktionen zur Verfügung: `ConvertASCIIToUTF8`, `ConvertUTF8ToASCII`, `ConvertToURLEncoding` (Percent-Encoding für URLs).
+
 ## Verfügbare Interfaces
 
 *(wird laufend ergänzt)*
