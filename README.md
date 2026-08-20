@@ -94,7 +94,10 @@ Bei `PVFOLDER` steuert `CREATIONTYPE` zusätzlich, ob der Ordner vom Anwender (m
 
 | Name | Beschreibung | Status |
 |---|---|---|
-| — | — | — |
+| [Dynamische Strompreise](<DRAFT - Dynamic power rate>) | Day-Ahead-Strompreise für heute und morgen: DE/AT (aWATTar), FR/NL (Energy-Charts.info), KR (Elecz.com, nur aktueller Preis). Konfigurierbarer Aufschlag/MwSt, Erkennung des günstigsten Zeitfensters, stündliche Preise als Datenpunkte. | Entwurf |
+| [Philips Hue V2](<DRAFT - Philips hue SSE>) | Anbindung einer Philips-Hue-Bridge über die CLIP-v2-API: Lampen, Räume/Zonen, Szenen, Sensoren (Bewegung/Temperatur/Kontakt/Batterie) und Automationen. Zustandsänderungen kommen per Server-Sent-Events (Eventstream) in Echtzeit von der Bridge, kein Dauerpolling nötig. | Entwurf |
+
+Jeder Interface-Ordner enthält aktuell zwei inhaltlich identische Sprachvarianten in Unterordnern `English/` und `German/` (unterschiedliche `DEFAULTNAME`-Werte in der XML, gleiche Logik).
 
 ## Voraussetzungen
 

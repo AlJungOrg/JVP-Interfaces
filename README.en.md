@@ -94,7 +94,10 @@ For `PVFOLDER`, `CREATIONTYPE` additionally controls whether the folder can be c
 
 | Name | Description | Status |
 |---|---|---|
-| — | — | — |
+| [Dynamic power rate](<DRAFT - Dynamic power rate>) | Day-ahead electricity prices for today and tomorrow: DE/AT (aWATTar), FR/NL (Energy-Charts.info), KR (Elecz.com, current price only). Configurable surcharge/VAT, detection of the cheapest time window, hourly prices exposed as datapoints. | Draft |
+| [Philips Hue V2](<DRAFT - Philips hue SSE>) | Connects a Philips Hue bridge via the CLIP v2 API: lights, rooms/zones, scenes, sensors (motion/temperature/contact/battery) and automations. State changes arrive in real time via Server-Sent Events (eventstream) from the bridge, no continuous polling required. | Draft |
+
+Each interface folder currently ships two functionally identical language variants in `English/` and `German/` subfolders (different `DEFAULTNAME` values in the XML, same logic).
 
 ## Requirements
 
