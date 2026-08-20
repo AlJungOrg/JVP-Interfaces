@@ -92,12 +92,16 @@ Bei `PVFOLDER` steuert `CREATIONTYPE` zusätzlich, ob der Ordner vom Anwender (m
 
 *(wird laufend ergänzt)*
 
+Der Ordner-Präfix zeigt den Reifegrad: **DRAFT** = Entwurf, noch nicht durchgängig getestet. **PoC** = Proof of Concept, kurz funktional getestet, aber nicht für den Produktiveinsatz freigegeben.
+
 | Name | Beschreibung | Status |
 |---|---|---|
 | [Dynamische Strompreise](<DRAFT - Dynamic power rate>) | Day-Ahead-Strompreise für heute und morgen: DE/AT (aWATTar), FR/NL (Energy-Charts.info), KR (Elecz.com, nur aktueller Preis). Konfigurierbarer Aufschlag/MwSt, Erkennung des günstigsten Zeitfensters, stündliche Preise als Datenpunkte. | Entwurf |
 | [Philips Hue V2](<DRAFT - Philips hue SSE>) | Anbindung einer Philips-Hue-Bridge über die CLIP-v2-API: Lampen, Räume/Zonen, Szenen, Sensoren (Bewegung/Temperatur/Kontakt/Batterie) und Automationen. Zustandsänderungen kommen per Server-Sent-Events (Eventstream) in Echtzeit von der Bridge, kein Dauerpolling nötig. | Entwurf |
-
-Jeder Interface-Ordner enthält aktuell zwei inhaltlich identische Sprachvarianten in Unterordnern `English/` und `German/` (unterschiedliche `DEFAULTNAME`-Werte in der XML, gleiche Logik).
+| [trivum Multiroom-Audio](<DRAFT - Trivum>) | Anbindung eines trivum-Systems (z. B. MusicCenter) über die mcenter HTTP/XML-API: Zonen schalten/steuern (Ein/Aus, Lautstärke, Stumm, Play/Pause/Stop/Titelwechsel), Quellenwahl, Multiroom-Gruppierung sowie Favoriten und Titelinfos (Interpret/Album/Titel/Cover) je Zone. | Entwurf |
+| [ekey Fingerprint-Zutritt](<PoC - eKey>) | Empfängt Zutrittsereignisse vom ekey Converter UDP/LAN (Protokoll `home` oder `multi`) und/oder von ekey-bionyx-Function-Webhooks über einen eingebetteten HTTP-Server (Bearer-Token-Prüfung). Beliebig viele „Funktionen" lassen sich auf Benutzer-ID, Finger-ID, Aktionscode bzw. bionyx-Funktionsnamen filtern und geben einen konfigurierbaren Impuls aus; letzter Benutzer, Finger, Scanner und Rohdaten stehen als Statusdatenpunkte bereit. | PoC |
+| [JUNG HOME](<PoC - JUNGHOME>) | Anbindung des JUNG HOME Systems zum Steuern und Auslesen von JUNG-HOME-Geräten aus der Visualisierung. | PoC |
+| [Anwesenheitssimulation](<PoC - Presence simulation>) | Anwesenheitssimulation: zeichnet Schaltvorgänge auf bzw. spielt zeitgesteuerte Muster ab, um bei Abwesenheit Bewohneraktivität zu simulieren. | PoC |
 
 ## Voraussetzungen
 

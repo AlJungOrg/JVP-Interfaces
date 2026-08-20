@@ -92,12 +92,18 @@ For `PVFOLDER`, `CREATIONTYPE` additionally controls whether the folder can be c
 
 *(continuously updated)*
 
+The folder prefix indicates maturity: **DRAFT** = draft, not yet tested end to end. **PoC** = proof of concept, briefly functionally tested but not released for production use.
+
 | Name | Description | Status |
 |---|---|---|
 | [Dynamic power rate](<DRAFT - Dynamic power rate>) | Day-ahead electricity prices for today and tomorrow: DE/AT (aWATTar), FR/NL (Energy-Charts.info), KR (Elecz.com, current price only). Configurable surcharge/VAT, detection of the cheapest time window, hourly prices exposed as datapoints. | Draft |
 | [Philips Hue V2](<DRAFT - Philips hue SSE>) | Connects a Philips Hue bridge via the CLIP v2 API: lights, rooms/zones, scenes, sensors (motion/temperature/contact/battery) and automations. State changes arrive in real time via Server-Sent Events (eventstream) from the bridge, no continuous polling required. | Draft |
+| [trivum multiroom audio](<DRAFT - Trivum>) | Connects a trivum system (e.g. MusicCenter) via the mcenter HTTP/XML API: switch/control zones (on/off, volume, mute, play/pause/stop/track skip), source selection, multiroom grouping, plus favorites and track info (artist/album/title/cover) per zone. | Draft |
+| [ekey fingerprint access](<PoC - eKey>) | Receives access events from an ekey Converter UDP/LAN (`home` or `multi` protocol) and/or from ekey bionyx function webhooks via an embedded HTTP server (bearer token check). Any number of "functions" can be filtered by user ID, finger ID, action code or bionyx function name and emit a configurable pulse; last user, finger, scanner and raw payload are available as status datapoints. | PoC |
+| [JUNG HOME](<PoC - JUNGHOME>) | Connects the JUNG HOME system so JUNG HOME devices can be controlled and read from the visualization. | PoC |
+| [Presence simulation](<PoC - Presence simulation>) | Presence simulation: records switching events or replays time-controlled patterns to simulate occupant activity while the building is empty. | PoC |
 
-Each interface folder currently ships two functionally identical language variants in `English/` and `German/` subfolders (different `DEFAULTNAME` values in the XML, same logic).
+Depending on the interface, folders ship language variants in `English/` and `German/` subfolders (different `DEFAULTNAME` values in the XML, same logic).
 
 ## Requirements
 
